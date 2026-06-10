@@ -536,6 +536,42 @@ npx agent-browser
 
 All MCP servers work identically offline: local machine execution, all AI inference routed to SGLang via `ANTHROPIC_BASE_URL`.
 
+### Usage: What to say to Claude Code
+
+After installing the MCP server, just type natural language requests inside Claude Code:
+
+**Console error review:**
+> `"Open http://localhost:3000 and check the browser console for any errors"`
+> `"Navigate to the dashboard and read console output, look for warnings and errors"`
+> `"Go to localhost:3000, show me all console messages filtered by type error"`
+
+**Network request inspection:**
+> `"Open my app at localhost:3000 and capture all network requests with status 4xx or 5xx"`
+> `"Navigate to the login page, submit the form, and check what API calls failed"`
+> `"Open the page and list all API requests with their response times"`
+
+**Page structure analysis:**
+> `"Open localhost:3000 and read the accessibility tree, summarize the page layout"`
+> `"Navigate to the settings page and describe all interactive elements"`
+> `"Go to the dashboard and find all buttons, links, and form fields"`
+
+**Full debug workflow:**
+> `"Open localhost:3000, click the login button, fill in credentials, submit, then check console for errors and network for failed requests"`
+
+**With agent-browse specifically (errors + stack traces):**
+> `"Use browser_errors to get all JavaScript errors with their stack traces from localhost:3000"`
+> `"Open my app and use browser_console, browser_requests, and browser_errors to give me a full debug report"`
+
+### How Claude picks the right tool
+
+Claude Code follows a priority order when you ask it to do browser tasks:
+1. **MCP server** (Playwright MCP / agent-browse / agent-browser) -- if configured, Claude uses this first
+2. **Bash** (Playwright CLI) -- if no MCP server, Claude writes Playwright scripts
+3. **Claude in Chrome** -- if the Chrome extension is installed
+4. **Computer Use** -- last resort (requires vision, not recommended for your setup)
+
+Since you have an MCP server installed, Claude will use it automatically. No manual tool selection needed.
+
 ### Offline Compatibility
 
 All communication stays local:

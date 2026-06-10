@@ -1329,6 +1329,51 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
 
   <p><strong>جميع مخدمات MCP تعمل أوفلاين بنفس الطريقة:</strong> تشتغل على جهازك المحلي, كل طلبات AI تذهب إلى SGLang عبر <code>ANTHROPIC_BASE_URL</code>.</p>
 
+  <h3>الاستخدام: ماذا تقول لكلود كود</h3>
+  <p>بعد تثبيت مخدم MCP، اكتب طلباتك باللغة الطبيعية داخل Claude Code:</p>
+
+  <h4>فحص أخطاء Console</h4>
+  <ul>
+    <li><code>"افتح http://localhost:3000 وتأكد من وجود أخطاء في browser console"</code></li>
+    <li><code>"اذهب إلى dashboard واقرأ مخرجات console, دور على warnings و errors"</code></li>
+    <li><code>"روح لـ localhost:3000, أرني جميع رسائل console مصنفة حسب النوع error"</code></li>
+  </ul>
+
+  <h4>فحص طلبات Network</h4>
+  <ul>
+    <li><code>"افتح تطبيقي على localhost:3000 والتقط جميع network requests ذات status 4xx أو 5xx"</code></li>
+    <li><code>"اذهب إلى صفحة login, أرسل النموذج, وتحقق من API calls الفاشلة"</code></li>
+    <li><code>"افتح الصفحة واعرض جميع طلبات API مع أوقات الاستجابة"</code></li>
+  </ul>
+
+  <h4>تحليل هيكل الصفحة</h4>
+  <ul>
+    <li><code>"افتح localhost:3000 واقرأ accessibility tree, لخص تخطيط الصفحة"</code></li>
+    <li><code>"اذهب إلى صفحة settings ووصف جميع العناصر التفاعلية"</code></li>
+    <li><code>"روح للـ dashboard ولقيني كل الأزرار والروابط وحقول النموذج"</code></li>
+  </ul>
+
+  <h4>سير عمل كامل للتصحيح</h4>
+  <ul>
+    <li><code>"افتح localhost:3000, اضغط على زر login, املأ البيانات, أرسل, ثم افحص console للأخطاء و network للطلبات الفاشلة"</code></li>
+  </ul>
+
+  <h4>مع agent-browse (أخطاء + stack traces)</h4>
+  <ul>
+    <li><code>"استخدم browser_errors لجلب جميع أخطاء JavaScript مع stack traces من localhost:3000"</code></li>
+    <li><code>"افتح تطبيقي واستخدم browser_console و browser_requests و browser_errors لتعطيني تقرير تصحيح كامل"</code></li>
+  </ul>
+
+  <h3>كيف يختار Claude الأداة المناسبة</h3>
+  <p>Claude Code يتبع ترتيب أولويات عندما تطلب منه مهمة متصفح:</p>
+  <ol>
+    <li><strong>مخدم MCP</strong> (Playwright MCP / agent-browse / agent-browser) — إذا كان مثبتا، Claude يستخدمه أولا</li>
+    <li><strong>Bash</strong> (سكريبت Playwright) — إذا لا يوجد MCP، Claude يكتب سكريبتات Playwright بنفسه</li>
+    <li><strong>Claude in Chrome</strong> — إذا كانت إضافة Chrome مثبتة</li>
+    <li><strong>Computer Use</strong> — حل أخير (يحتاج رؤية، غير مناسب لموديلك)</li>
+  </ol>
+  <p>بما أن مخدم MCP مثبت عندك، Claude سيستخدمه تلقائيا. لا تحتاج اختيار الأداة يدويا.</p>
+
   <h3>مقارنة شاملة</h3>
   <table>
     <tr><th>الميزة</th><th>Playwright MCP (Microsoft)</th><th>agent-browse</th><th>agent-browser (Vercel)</th><th>Claude in Chrome</th></tr>
