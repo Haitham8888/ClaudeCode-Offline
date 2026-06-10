@@ -3,765 +3,961 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دليل Claude Code Offline - التثبيت والتشغيل بدون إنترنت</title>
+<title>Claude Code Offline - دليل التشغيل الكامل بدون إنترنت</title>
 <style>
-  :root {
-    --bg: #0f0f1a;
-    --card: #1a1a2e;
-    --accent: #7c3aed;
-    --accent2: #a78bfa;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --success: #22c55e;
-    --warning: #eab308;
-    --border: #2d2d44;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --card: #111111;
+    --card2: #1a1a1a;
+    --border: #222222;
+    --border-light: #2a2a2a;
+    --text: #d4d4d4;
+    --text-muted: #888888;
+    --text-dim: #555555;
+    --accent: #7c3aed;
+    --accent-hover: #8b5cf6;
+    --accent-dim: #3b1f8a;
+    --success: #22c55e;
+    --success-bg: #0a2a12;
+    --warning: #eab308;
+    --warning-bg: #2a240a;
+    --error: #ef4444;
+    --error-bg: #2a0a0a;
+    --code-bg: #0d0d0d;
+    --code-text: #d4d4d4;
+    --line: #1a1a1a;
+  }
+
+  html { scroll-behavior: smooth; }
+
   body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.8;
-    padding: 20px;
+    line-height: 1.9;
+    font-size: 15px;
   }
-  .container { max-width: 1100px; margin: 0 auto; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
   header {
     text-align: center;
-    padding: 40px 20px;
-    border-bottom: 2px solid var(--border);
-    margin-bottom: 40px;
+    padding: 60px 20px 50px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 50px;
   }
+
   header h1 {
-    font-size: 2.5em;
-    background: linear-gradient(135deg, var(--accent2), #f472b6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 2.2em;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 12px;
   }
-  header .subtitle { color: var(--muted); font-size: 1.1em; margin-top: 10px; }
-  header .version { color: var(--accent2); font-size: 0.9em; margin-top: 5px; }
+
+  header h1 span { color: var(--accent); font-weight: 400; }
+
+  header .subtitle {
+    color: var(--text-muted);
+    font-size: 1em;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+
+  .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
   .badge {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: bold;
+    padding: 4px 14px;
+    border-radius: 2px;
+    font-size: 0.75em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
-  .badge-win { background: #2563eb; color: white; }
-  .badge-linux { background: #dc2626; color: white; }
-  .badge-offline { background: var(--success); color: black; }
-  .badge-proven { background: #f59e0b; color: black; }
+
+  .badge-primary { background: var(--accent); color: #fff; }
+  .badge-success { background: var(--success); color: #000; }
+  .badge-win { background: #1a3a6b; color: #fff; }
+  .badge-linux { background: #6b1a1a; color: #fff; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* Sections */
   .section {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 30px;
-    margin-bottom: 30px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
   }
+
   .section h2 {
-    color: var(--accent2);
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    font-size: 1.3em;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
+    letter-spacing: 0.3px;
   }
+
+  .section h2 .accent { color: var(--accent); }
+
   .section h3 {
-    color: #e2e8f0;
-    font-size: 1.15em;
-    margin: 20px 0 10px;
+    font-size: 1.05em;
+    font-weight: 500;
+    color: var(--text);
+    margin: 24px 0 12px;
   }
+
+  .section p { margin-bottom: 12px; color: var(--text-muted); }
+  .section p strong { color: var(--text); }
+
+  /* Code */
   code {
-    background: #2d2d44;
+    background: var(--code-bg);
     color: #fbbf24;
     padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.9em;
-    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.88em;
+    font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    border: 1px solid var(--border);
+    border-radius: 2px;
   }
+
   pre {
-    background: #0a0a15;
-    color: #e2e8f0;
+    background: var(--code-bg);
+    color: var(--code-text);
     padding: 20px;
-    border-radius: 12px;
-    overflow-x: auto;
-    font-size: 0.9em;
+    font-size: 0.85em;
     line-height: 1.7;
     border: 1px solid var(--border);
     direction: ltr;
     text-align: left;
-    margin: 15px 0;
+    margin: 16px 0;
+    overflow-x: auto;
   }
+
   pre .comment { color: #6b7280; }
   pre .cmd { color: #22d3ee; }
   pre .str { color: #fbbf24; }
   pre .var { color: #a78bfa; }
-  pre .output { color: #94a3b8; }
-  ul, ol { padding-right: 20px; margin: 10px 0; }
-  li { margin-bottom: 8px; }
+  pre .output { color: #6b7280; }
+
+  /* Lists */
+  ul, ol { padding-right: 20px; margin: 12px 0; }
+  li { margin-bottom: 6px; color: var(--text-muted); }
+
+  /* Notes */
   .note {
-    background: #1e1b3a;
-    border-right: 4px solid var(--accent);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
+    background: var(--card2);
+    border-right: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin: 16px 0;
   }
-  .warning {
-    background: #3a2e1b;
-    border-right: 4px solid var(--warning);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
+
+  .note strong { color: var(--accent-hover); }
+
+  .warning-box {
+    background: var(--warning-bg);
+    border-right: 3px solid var(--warning);
+    padding: 16px 20px;
+    margin: 16px 0;
   }
-  .success {
-    background: #1a3a1b;
-    border-right: 4px solid var(--success);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 15px 0;
+
+  .success-box {
+    background: var(--success-bg);
+    border-right: 3px solid var(--success);
+    padding: 16px 20px;
+    margin: 16px 0;
   }
+
+  .error-box {
+    background: var(--error-bg);
+    border-right: 3px solid var(--error);
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+
+  /* Steps */
   .step {
     display: flex;
-    gap: 15px;
+    gap: 16px;
     margin: 20px 0;
-    padding: 15px;
-    background: #151528;
-    border-radius: 12px;
+    padding: 16px;
+    background: var(--card2);
+    border: 1px solid var(--border);
   }
+
   .step-num {
     background: var(--accent);
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    color: #fff;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.85em;
     flex-shrink: 0;
   }
+
   .step-content { flex: 1; }
-  .step-content p { margin: 5px 0; }
+  .step-content p { margin: 4px 0; }
+
+  /* Tables */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 15px 0;
+    margin: 16px 0;
+    font-size: 0.92em;
   }
+
   th, td {
     border: 1px solid var(--border);
-    padding: 12px;
+    padding: 10px 14px;
     text-align: right;
   }
-  th { background: #151528; color: var(--accent2); }
-  .os-tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 0;
-    border-bottom: 2px solid var(--border);
+
+  th {
+    background: var(--card2);
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.85em;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
   }
-  .os-tab {
-    padding: 12px 24px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: var(--muted);
-    font-size: 1em;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.2s;
+
+  td { color: var(--text-muted); }
+  td:first-child code { font-size: 0.9em; }
+
+  .table-group td {
+    background: var(--card2);
+    color: var(--accent-hover);
+    font-weight: 500;
   }
-  .os-tab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
-  .os-content { display: none; }
-  .os-content.active { display: block; }
+
+  /* File tree */
   .file-tree {
-    background: #0a0a15;
+    background: var(--code-bg);
     padding: 20px;
-    border-radius: 12px;
-    font-family: monospace;
-    line-height: 2;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 2.2;
     border: 1px solid var(--border);
-    margin: 15px 0;
+    margin: 16px 0;
+    direction: ltr;
+    text-align: left;
   }
+
   .file-tree .folder { color: #22d3ee; }
-  .file-tree .file { color: #e2e8f0; }
-  .file-tree .desc { color: #6b7280; font-size: 0.9em; }
-  .file-tree .indent { padding-right: 20px; }
+  .file-tree .file { color: var(--text); }
+  .file-tree .desc { color: var(--text-dim); font-size: 0.9em; font-family: 'Segoe UI', system-ui, sans-serif; }
+
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
+
   @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
-  .test-result {
-    background: #0a2a1b;
-    border: 1px solid var(--success);
-    padding: 20px;
-    border-radius: 12px;
-    margin: 15px 0;
+
+  /* Tabs */
+  .os-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .os-tab {
+    padding: 10px 24px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    font-size: 0.9em;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .os-tab:hover { color: var(--text); }
+  .os-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .os-content { display: none; }
+  .os-content.active { display: block; }
+
+  /* Terminal output boxes */
+  .terminal {
+    background: #000;
+    color: #22c55e;
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.85em;
+    line-height: 1.7;
+    border: 1px solid #1a1a1a;
     direction: ltr;
     text-align: left;
+    margin: 16px 0;
+    overflow-x: auto;
   }
-  .test-result .prompt { color: #22d3ee; }
-  .test-result .response { color: #22c55e; }
-  .test-result .label { color: #6b7280; }
+
+  .terminal .prompt { color: #22d3ee; }
+  .terminal .response { color: #22c55e; }
+  .terminal .label { color: #6b7280; }
+
+  /* Status indicators */
+  .status-ok { color: var(--success); }
+  .status-no { color: var(--error); }
+  .status-na { color: var(--text-dim); }
+
+  /* Footer */
   footer {
     text-align: center;
-    padding: 30px;
-    color: var(--muted);
-    font-size: 0.9em;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 0.85em;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
   }
+
+  footer p { margin-bottom: 4px; }
+
+  a { color: var(--accent-hover); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-light); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 </style>
 </head>
 <body>
 <div class="container">
 
+<!-- HEADER -->
 <header>
-  <h1>Claude Code Offline</h1>
-  <div class="subtitle">التشغيل الكامل أوفلاين بدون حساب وبدون إنترنت | DeepSeek V4 Flash + SGLang</div>
-  <div class="version">
-    <span class="badge badge-offline">أوفلاين بالكامل</span>
-    <span class="badge badge-proven">مختبر ومضمون</span>
+  <h1>Claude Code <span>Offline</span></h1>
+  <div class="subtitle">تشغيل Claude Code بدون إنترنت وبدون حساب عبر SGLang + DeepSeek V4 Flash</div>
+  <div class="badge-row">
+    <span class="badge badge-primary">Offline</span>
+    <span class="badge badge-success">v2.1.170</span>
     <span class="badge badge-win">Windows</span>
-    <span class="badge badge-linux">Linux (RHEL)</span>
-    <span style="margin-right: 10px; color: var(--muted);">الإصدار: 2.1.170</span>
+    <span class="badge badge-linux">Linux</span>
   </div>
 </header>
 
-<!-- نتيجة الاختبار -->
-<div class="section">
-  <h2>✓ تم الاختبار والتأكيد</h2>
-  <p>تم اختبار Claude Code v2.1.170 على Windows 11 وثبت أنه يعمل <strong>بدون أي تسجيل دخول</strong> و <strong>بدون اتصال بالإنترنت</strong>:</p>
+<!-- QUICK START -->
+<section class="section">
+  <h2>بدء سريع</h2>
 
-  <div class="test-result">
-    <span class="label">الأمر:</span> <span class="prompt">claude --bare -p "جاوب بكلمة مرحبا فقط"</span><br>
-    <span class="label">الرد:</span> <span class="response">Hello from offline SGLang!</span>
+  <p>لتشغيل Claude Code أوفلاين بالكامل، تحتاج فقط ثلاثة متغيرات بيئية وسيرفر SGLang يعمل على المنفذ 30000:</p>
+
+  <div class="os-tabs">
+    <button class="os-tab active" onclick="switchOS('win')">Windows (CMD)</button>
+    <button class="os-tab" onclick="switchOS('ps')">Windows (PowerShell)</button>
+    <button class="os-tab" onclick="switchOS('lin')">Linux</button>
   </div>
 
-  <div class="test-result">
-    <span class="label">الأمر:</span> <span class="prompt">claude --model DeepSeek-V4-Flash (تفاعلي)</span><br>
-    <span class="label">النتيجة:</span> <span class="response">فتح REPL كامل بدون أي طلب تسجيل دخول ✓</span>
-  </div>
-
-  <h3>نتائج الاختبارات</h3>
-  <table>
-    <tr><th>الاختبار</th><th>النتيجة</th></tr>
-    <tr><td><code>claude --version</code> مع متغيرات أوفلاين</td><td>✅ 2.1.170 (Claude Code)</td></tr>
-    <tr><td><code>claude --bare -p "..."</code> ضد Mock Server</td><td>✅ رد صحيح: "Hello from offline SGLang!"</td></tr>
-    <tr><td><code>claude --model DeepSeek-V4-Flash</code> (تفاعلي)</td><td>✅ REPL كامل بدون login</td></tr>
-    <tr><td><code>claude --bare</code> بدون سيرفر</td><td>✅ ينتظر الاتصال (ما يطلب login)</td></tr>
-    <tr><td><code>ANTHROPIC_BASE_URL</code> يعيد التوجيه</td><td>✅ يتصل بالسيرفر المحلي بدلاً من Anthropic</td></tr>
-    <tr><td><code>ANTHROPIC_API_KEY=sk-offline</code></td><td>✅ مفتاح وهمي مقبول بدون تحقق</td></tr>
-    <tr><td><code>claude</code> في CMD</td><td>✅ شغال 100%</td></tr>
-  </table>
-
-  <div class="success">
-    <strong>✅ مثبت:</strong> Claude Code يشتغل كاملاً بدون حساب Anthropic وبدون إنترنت. يحتاج فقط سيرفر SGLang محلي يشغل DeepSeek V4 Flash على port 30000.
-  </div>
-</div>
-
-<!-- محتويات الحزمة -->
-<div class="section">
-  <h2>محتويات الحزمة</h2>
-  <div class="file-tree">
-    ClaudeCode-Offline-Package/<br>
-    ├── <span class="folder">config/</span>
-    <span class="desc">الإعدادات المسبقة</span><br>
-    │   └── <span class="file">settings.json</span>
-    <span class="desc">~/.claude/settings.json</span><br>
-    ├── <span class="folder">scripts/</span>
-    <span class="desc">سكريبتات تهيئة البيئة</span><br>
-    │   ├── <span class="file">setup-env-windows.ps1</span>
-    <span class="desc">PowerShell</span><br>
-    │   └── <span class="file">setup-env-linux.sh</span>
-    <span class="desc">Bash</span><br>
-    ├── <span class="folder">windows/</span>
-    <span class="desc">ملفات Windows</span><br>
-    │   ├── <span class="file">claude.exe</span>
-    <span class="desc">الـ binary (231 MB)</span><br>
-    │   └── <span class="file">install-offline.bat</span>
-    <span class="desc">مثبت أوفلاين (Batch)</span><br>
-    ├── <span class="folder">linux/</span>
-    <span class="desc">ملفات Linux (RHEL)</span><br>
-    │   ├── <span class="file">claude</span>
-    <span class="desc">الـ binary (236 MB)</span><br>
-    │   └── <span class="file">install-offline.sh</span>
-    <span class="desc">مثبت أوفلاين (Bash)</span><br>
-    └── <span class="file">index.html</span>
-    <span class="desc">هذا الدليل</span><br>
-  </div>
-</div>
-
-<!-- طريقة التشغيل الكامل -->
-<div class="section">
-  <h2>طريقة التشغيل الكامل أوفلاين (بدون إنترنت)</h2>
-
-  <h3>ما تحتاجه</h3>
-  <ul>
-    <li><strong>سيرفر SGLang</strong> على RHEL 10 (أو أي Linux) يشغل <strong>DeepSeek V4 Flash</strong></li>
-    <li>سيرفر SGLang لازم يشغل <code>/v1/messages</code> endpoint (PR #18630 - مدعوم أصلاً)</li>
-    <li>اتصال شبكة محلية (LAN) بين جهازك وسيرفر SGLang</li>
-    <li>ملفات Claude Code من هذه الحزمة (تنقل عبر USB للجهاز المعزول)</li>
-  </ul>
-
-  <div class="note">
-    <strong>مهم:</strong> SGLang يدعم <strong>Anthropic Messages API</strong> (<code>/v1/messages</code>) بشكل أصلي. لا تحتاج أي Proxy إضافي (مثل LiteLLM). كل شيء مباشر بين Claude Code و SGLang.
-  </div>
-
-  <h3>الخطوات</h3>
-
-  <div class="step">
-    <div class="step-num">1</div>
-    <div class="step-content">
-      <p><strong>تأكد أن سيرفر SGLang شغال</strong></p>
-      <p>من أي جهاز في الشبكة، اختبر الاتصال:</p>
-      <pre>curl http://<span class="var">[IP-SERVER]</span>:30000/v1/models</pre>
-      <p>يجب أن ترى قائمة بالموديلات المتاحة.</p>
-    </div>
-  </div>
-
-  <div class="step">
-    <div class="step-num">2</div>
-    <div class="step-content">
-      <p><strong>ثبّت Claude Code على جهازك</strong></p>
-      <p>اختر نظام التشغيل:</p>
-      <div class="os-tabs" id="osTabs">
-        <button class="os-tab active" onclick="switchOS('windows')">Windows</button>
-        <button class="os-tab" onclick="switchOS('linux')">Linux (RHEL)</button>
-      </div>
-
-      <div class="os-content active" id="os-windows">
-        <p><strong>خيار 1 - التثبيت التلقائي (كمسؤول):</strong></p>
-        <pre>.\windows\install-offline.bat</pre>
-        <p><strong>خيار 2 - التثبيت اليدوي:</strong></p>
-        <pre>mkdir -Force "$env:USERPROFILE\.local\bin"
-copy windows\claude.exe "$env:USERPROFILE\.local\bin\"
-$userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($userPath -notlike "*\.local\bin*") {
-  [Environment]::SetEnvironmentVariable("PATH", "$userPath;$env:USERPROFILE\.local\bin", "User")
-}
-mkdir -Force "$env:USERPROFILE\.claude"
-copy config\settings.json "$env:USERPROFILE\.claude\"</pre>
-      </div>
-
-      <div class="os-content" id="os-linux">
-        <p><strong>خيار 1 - التثبيت التلقائي:</strong></p>
-        <pre>chmod +x linux/install-offline.sh
-./linux/install-offline.sh</pre>
-        <p><strong>خيار 2 - التثبيت اليدوي:</strong></p>
-        <pre>mkdir -p ~/.local/bin
-cp linux/claude ~/.local/bin/
-chmod +x ~/.local/bin/claude
-export PATH="$HOME/.local/bin:$PATH"
-mkdir -p ~/.claude
-cp config/settings.json ~/.claude/settings.json</pre>
-      </div>
-    </div>
-  </div>
-
-  <div class="step">
-    <div class="step-num">3</div>
-    <div class="step-content">
-      <p><strong>عدّل IP السيرفر في الإعدادات</strong></p>
-      <p>افتح الملف <code>~/.claude/settings.json</code> وغيّر <code>[IP-SERVER]</code> إلى IP سيرفر SGLang الحقيقي:</p>
-      <pre>{
-  "env": {
-    <span class="str">"ANTHROPIC_BASE_URL"</span>: <span class="str">"http://<span class="var">TBD</span>:30000"</span>,
-    <span class="str">"ANTHROPIC_API_KEY"</span>: <span class="str">"sk-offline"</span>,
-    <span class="str">"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"</span>: <span class="str">"1"</span>,
-    <span class="str">"DISABLE_AUTOUPDATER"</span>: <span class="str">"1"</span>
-  }
-}</pre>
-      <p><strong>أو</strong> استخدم متغيرات البيئة مباشرة (بدون تعديل ملف):<p>
-    </div>
-  </div>
-
-  <div class="step">
-    <div class="step-num">4</div>
-    <div class="step-content">
-      <p><strong>شغّل Claude Code</strong></p>
-      <p><strong>التفاعلي (REPL) - الأفضل:</strong></p>
-      <pre><span class="comment"># Windows CMD:</span>
+  <div class="os-content active" id="os-win">
+    <pre><span class="comment">@echo off
 set ANTHROPIC_BASE_URL=http://TBD:30000
 set ANTHROPIC_API_KEY=sk-offline
+set ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash
 set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-claude --model DeepSeek-V4-Flash
 
-<span class="comment"># Windows PowerShell:</span>
-$env:ANTHROPIC_BASE_URL="http://TBD:30000"
-$env:ANTHROPIC_API_KEY="sk-offline"
-$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
-claude --model DeepSeek-V4-Flash
-
-<span class="comment"># Linux:</span>
-export ANTHROPIC_BASE_URL=http://TBD:30000
-export ANTHROPIC_API_KEY=sk-offline
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 claude --model DeepSeek-V4-Flash</pre>
+  </div>
 
-      <p><strong>لتنفيذ أمر لمرة واحدة (One-Shot):</strong></p>
-      <pre><span class="comment"># CMD:</span>
-set ANTHROPIC_BASE_URL=http://TBD:30000 && set ANTHROPIC_API_KEY=sk-offline && set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 && claude --bare -p "اكتب دالة لحساب مساحة الدائرة"
+  <div class="os-content" id="os-ps">
+    <pre>$env:ANTHROPIC_BASE_URL = "http://TBD:30000"
+$env:ANTHROPIC_API_KEY = "sk-offline"
+$env:ANTHROPIC_DEFAULT_HAIKU_MODEL = "DeepSeek-V4-Flash"
+$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
 
-<span class="comment"># PowerShell:</span>
-$env:ANTHROPIC_BASE_URL="http://TBD:30000"; $env:ANTHROPIC_API_KEY="sk-offline"; $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"; claude --bare -p "اكتب دالة لحساب مساحة الدائرة"
+claude --model DeepSeek-V4-Flash</pre>
+  </div>
 
-<span class="comment"># Linux:</span>
-ANTHROPIC_BASE_URL=http://TBD:30000 ANTHROPIC_API_KEY=sk-offline CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 claude --bare -p "اكتب دالة لحساب مساحة الدائرة"</pre>
+  <div class="os-content" id="os-lin">
+    <pre><span class="cmd">export</span> <span class="var">ANTHROPIC_BASE_URL</span>=<span class="str">http://TBD:30000</span>
+<span class="cmd">export</span> <span class="var">ANTHROPIC_API_KEY</span>=<span class="str">sk-offline</span>
+<span class="cmd">export</span> <span class="var">ANTHROPIC_DEFAULT_HAIKU_MODEL</span>=<span class="str">DeepSeek-V4-Flash</span>
+<span class="cmd">export</span> <span class="var">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</span>=<span class="str">1</span>
+
+<span class="cmd">claude</span> --model DeepSeek-V4-Flash</pre>
+  </div>
+
+  <p>قم بتغيير <code>TBD</code> إلى عنوان IP الخاص بسيرفر SGLang الفعلي.</p>
+
+  <div class="success-box">
+    <strong>تم التحقق:</strong> Claude Code v2.1.170 يعمل بهذه الطريقة بدون أي تسجيل دخول وبدون إنترنت، ويدعم REPL التفاعلي والأوامر النصية و /agents.
+  </div>
+</section>
+
+<!-- CONTENTS -->
+<section class="section">
+  <h2>محتويات الحزمة</h2>
+
+  <div class="file-tree">
+ClaudeCode-Offline-Package/
+  <span class="folder">config/</span>                   <span class="desc">اعدادات مسبقة لتعطيل جميع الاتصالات الخارجية</span>
+    settings.json                     <span class="desc">~/.claude/settings.json</span>
+  <span class="folder">scripts/</span>                  <span class="desc">سكريبتات تهيئة البيئة</span>
+    setup-env-windows.ps1             <span class="desc">PowerShell</span>
+    setup-env-linux.sh                <span class="desc">Bash</span>
+  <span class="folder">windows/</span>                  <span class="desc">ملفات Windows</span>
+    claude.exe                        <span class="desc">الملف التنفيذي (242 MB)</span>
+    install-offline.bat               <span class="desc">مثبت أوفلاين</span>
+  <span class="folder">linux/</span>                    <span class="desc">ملفات Linux</span>
+    claude                            <span class="desc">الملف التنفيذي (247 MB)</span>
+    install-offline.sh                <span class="desc">مثبت أوفلاين</span>
+    index.html                        <span class="desc">هذا الدليل</span>
+  </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="section">
+  <h2>المتطلبات</h2>
+
+  <div class="grid-2">
+    <div>
+      <h3>Windows</h3>
+      <ul>
+        <li>Windows 10 (1903+) أو Windows 11</li>
+        <li>Git for Windows (<a href="https://git-scm.com">git-scm.com</a>)</li>
+        <li>اتصال شبكي بسيرفر SGLang على المنفذ 30000</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Linux (RHEL / Fedora)</h3>
+      <ul>
+        <li>RHEL 8+ / Fedora / CentOS / Rocky Linux</li>
+        <li>Git: <code>sudo dnf install git</code></li>
+        <li>اتصال شبكي بسيرفر SGLang على المنفذ 30000</li>
+      </ul>
     </div>
   </div>
-</div>
 
-<!-- كيف يعمل -->
-<div class="section">
-  <h2>كيف يعمل النظام؟</h2>
+  <h3>سيرفر SGLang</h3>
+  <ul>
+    <li>يشغل DeepSeek V4 Flash على RHEL 10 مع Podman Container</li>
+    <li>المنفذ 30000 مفتوح على الشبكة المحلية</li>
+    <li>يدعم /v1/messages endpoint (PR #18630)</li>
+  </ul>
+</section>
 
-  <pre style="text-align: center; line-height: 2;">
-  ┌───────────────────────────────────────────────────────┐
-  │                    جهازك (Client)                      │
-  │  ┌──────────────┐          ┌───────────────────────┐  │
-  │  │  Claude Code  │ ──HTTP──▶│  SGLang Server       │  │
-  │  │  Terminal     │  :30000  │  (RHEL / Podman)     │  │
-  │  │  REPL / CLI   │ ◀──JSON──│  /v1/messages        │  │
-  │  │  AI Coding    │          │  DeepSeek V4 Flash   │  │
-  │  └──────────────┘          │  CUDA 13 / Podman    │  │
-  │                            └───────────────────────┘  │
-  │  ┌──────────────────┐                                 │
-  │  │  ملفات مشروعك    │ ← يقرأ ويعدل الملفات محليًا     │
-  │  └──────────────────┘                                 │
-  │          │ لا إنترنت │ لا حساب │ لا تليمتري           │
-  └───────────────────────────────────────────────────────┘
-  </pre>
+<!-- INSTALLATION -->
+<section class="section">
+  <h2>التثبيت</h2>
 
-  <h3>لماذا يعمل بدون تسجيل دخول؟</h3>
+  <div class="os-tabs">
+    <button class="os-tab active" onclick="switchOS('inst-win')">Windows</button>
+    <button class="os-tab" onclick="switchOS('inst-lin')">Linux</button>
+  </div>
+
+  <div class="os-content active" id="os-inst-win">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <p><strong>تثبيت Git (إذا لم يكن مثبتا)</strong></p>
+        <pre>winget install Git.Git</pre>
+        <p>يفضل إعادة تشغيل التيرمينال بعد التثبيت.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <p><strong>تثبيت Claude Code</strong></p>
+        <p>شغل المثبت الأوفلاين كمسؤول (Administrator):</p>
+        <pre>.\windows\install-offline.bat</pre>
+        <p>أو التثبيت اليدوي:</p>
+        <pre><span class="cmd">mkdir</span> -Force <span class="str">"$env:USERPROFILE\.local\bin"</span>
+<span class="cmd">copy</span> windows\claude.exe <span class="str">"$env:USERPROFILE\.local\bin\"</span>
+
+<span class="comment"># إضافة المسار إلى PATH</span>
+[Environment]::SetEnvironmentVariable(
+    <span class="str">"PATH"</span>,
+    <span class="str">"$env:PATH;$env:USERPROFILE\.local\bin"</span>,
+    [EnvironmentVariableTarget]::User
+)
+
+<span class="comment"># نسخ الإعدادات</span>
+<span class="cmd">mkdir</span> -Force <span class="str">"$env:USERPROFILE\.claude"</span>
+<span class="cmd">copy</span> config\settings.json <span class="str">"$env:USERPROFILE\.claude\"</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="os-content" id="os-inst-lin">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <p><strong>تثبيت المتطلبات</strong></p>
+        <pre><span class="cmd">sudo dnf install</span> git curl</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <p><strong>تثبيت Claude Code</strong></p>
+        <pre><span class="cmd">chmod +x</span> linux/install-offline.sh
+<span class="cmd">./linux/install-offline.sh</span></pre>
+        <p>أو التثبيت اليدوي:</p>
+        <pre><span class="cmd">mkdir -p</span> ~/.local/bin
+<span class="cmd">cp</span> linux/claude ~/.local/bin/
+<span class="cmd">chmod +x</span> ~/.local/bin/claude
+<span class="cmd">export</span> <span class="var">PATH</span>=<span class="str">"$HOME/.local/bin:$PATH"</span>
+<span class="cmd">mkdir -p</span> ~/.claude
+<span class="cmd">cp</span> config/settings.json ~/.claude/settings.json</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIGURATION -->
+<section class="section">
+  <h2>الإعدادات والتخصيص</h2>
+
+  <h3>ملف الإعدادات الدائم (~/.claude/settings.json)</h3>
+  <p>يمكنك وضع جميع المتغيرات البيئية في ملف الإعدادات لتثبيتها بشكل دائم، بحيث لا تحتاج لتعيينها كل مرة:</p>
+
+  <pre>{
+  <span class="str">"permissions"</span>: {
+    <span class="str">"allow"</span>: [<span class="str">"Bash(*)"</span>, <span class="str">"Read(*)"</span>, <span class="str">"Write(*)"</span>, <span class="str">"Edit(*)"</span>]
+  },
+  <span class="str">"env"</span>: {
+    <span class="str">"ANTHROPIC_BASE_URL"</span>: <span class="str">"http://TBD:30000"</span>,
+    <span class="str">"ANTHROPIC_API_KEY"</span>: <span class="str">"sk-offline"</span>,
+    <span class="str">"ANTHROPIC_DEFAULT_HAIKU_MODEL"</span>: <span class="str">"DeepSeek-V4-Flash"</span>,
+    <span class="str">"CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"</span>: <span class="str">"1"</span>,
+    <span class="str">"DISABLE_AUTOUPDATER"</span>: <span class="str">"1"</span>,
+    <span class="str">"CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY"</span>: <span class="str">"1"</span>
+  },
+  <span class="str">"fallbackModel"</span>: [
+    <span class="str">"DeepSeek-V4-Flash"</span>
+  ]
+}</pre>
+
+  <p>هذا الملف موجود مسبقا في <code>config/settings.json</code> - فقط غير IP السيرفر.</p>
+
+  <div class="note">
+    <strong>ملاحظة:</strong> يمكنك استخدام متغيرات البيئة بدلا من الملف. الأولوية لمتغيرات البيئة إذا كانت موجودة.
+  </div>
+
+  <h3>جميع المتغيرات البيئية</h3>
+
   <table>
-    <tr><th>المتغير / الخيار</th><th>التفسير</th></tr>
+    <tr><th>المتغير</th><th>إلزامي</th><th>الوظيفة</th></tr>
     <tr>
-      <td><code>ANTHROPIC_BASE_URL</code></td>
-      <td>يوجه جميع طلبات API من <code>api.anthropic.com</code> إلى سيرفر SGLang المحلي. هذا هو المفتاح الأساسي.</td>
+      <td><code>ANTHROPIC_BASE_URL</code></td><td><span class="status-ok">نعم</span></td>
+      <td>يعيد توجيه جميع طلبات Claude Code من خوادم Anthropic إلى سيرفر SGLang المحلي. هذا هو المفتاح الأساسي للتشغيل الأوفلاين.</td>
     </tr>
     <tr>
-      <td><code>ANTHROPIC_API_KEY</code></td>
-      <td>مفتاح API وهمي (مثلاً <code>sk-offline</code>). SGLang يتجاهله ولا يتحقق منه. يمنع Claude Code من طلب تسجيل دخول لأن المفتاح موجود.</td>
+      <td><code>ANTHROPIC_API_KEY</code></td><td><span class="status-ok">نعم</span></td>
+      <td>مفتاح API وهمي (مثلاً sk-offline). SGLang لا يتحقق من صحته. ضروري لمنع Claude Code من طلب تسجيل الدخول.</td>
     </tr>
     <tr>
-      <td><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code></td>
-      <td>يمنع جميع الاتصالات غير الأساسية: التليمتري، تقارير الأخطاء، التحديثات، الاستبيانات، إلخ.</td>
+      <td><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code></td><td><span class="status-ok">موصى به</span></td>
+      <td>يمنع جميع الاتصالات غير الضرورية: التليمتري، تقارير الأخطاء، التحديثات، الاستبيانات، أي طلبات HTTP غير متعلقة بالـ API.</td>
     </tr>
     <tr>
-      <td><code>DISABLE_AUTOUPDATER=1</code></td>
-      <td>يمنع التحديثات التلقائية (لأن ما في إنترنت أصلاً).</td>
+      <td><code>DISABLE_AUTOUPDATER</code></td><td><span class="status-ok">موصى به</span></td>
+      <td>يعطل فحص التحديثات التلقائي.</td>
+    </tr>
+    <tr>
+      <td><code>DISABLE_TELEMETRY</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يمنع إرسال بيانات الاستخدام.</td>
+    </tr>
+    <tr>
+      <td><code>DO_NOT_TRACK</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يعادل DISABLE_TELEMETRY.</td>
+    </tr>
+    <tr>
+      <td><code>CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يمنع التثبيت التلقائي لإضافات السوق الرسمي.</td>
+    </tr>
+    <tr>
+      <td><code>CLAUDE_CODE_DISABLE_BACKGROUND_TASKS</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يمنع المهام الخلفية.</td>
+    </tr>
+    <tr>
+      <td><code>DISABLE_LOGIN_COMMAND</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يخفي أمر /login بالكامل.</td>
+    </tr>
+    <tr>
+      <td><code>CLAUDE_CODE_SIMPLE</code></td><td><span class="status-na">اختياري</span></td>
+      <td>يعطل auto-discovery لل hooks وال plugins و MCP servers و skills. يفعّل وضع --print تلقائيا.</td>
+    </tr>
+    <tr>
+      <td><code>ANTHROPIC_DEFAULT_HAIKU_MODEL</code></td><td><span class="status-ok">موصى به</span></td>
+      <td>يحدد الموديل المستخدم للمهام الخلفية الصغيرة (تسمية الجلسات، التلخيص، تسمية الوكلاء). مهم جدا عند تشغيل وكلاء متعددين أوفلاين — بدونها سيحاول Claude Code استخدام موديل Haiku من خوادم Anthropic ويفشل. اضبطه على نفس اسم موديل DeepSeek المحلي. (البديل: ANTHROPIC_SMALL_FAST_MODEL)</td>
+    </tr>
+    <tr>
+      <td><code>ANTHROPIC_SMALL_FAST_MODEL</code></td><td><span class="status-na">اختياري</span></td>
+      <td>بديل عن ANTHROPIC_DEFAULT_HAIKU_MODEL في الإصدارات الأقدم. يتحكم بنفس الوظيفة: الموديل المستخدم للمهام الخلفية.</td>
+    </tr>
+    <tr>
+      <td><code>CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY</code></td><td><span class="status-na">اختياري</span></td>
+      <td>فعّل باكتشاف الموديلات من سيرفر SGLang المحلي. عندما =1، يملأ Claude Code قائمة /model من endpoint /v1/models على السيرفر المحلي. مفيد إذا كان السيرفر يقدم عدة موديلات.</td>
+    </tr>
+    <tr>
+      <td><code>MAX_THINKING_TOKENS</code></td><td><span class="status-na">اختياري</span></td>
+      <td>التحكم في الـ thinking tokens. اضبط =0 لتعطيل extended thinking تماما (مفيد مع الموديلات المحلية التي لا تدعم thinking).</td>
+    </tr>
+    <tr>
+      <td><code>ENABLE_TOOL_SEARCH</code></td><td><span class="status-na">اختياري</span></td>
+      <td>التحكم في بحث أدوات MCP. القيمة false تحمّل جميع الأدوات مسبقا. القيمة true تفعّل التحميل المؤجل (deferred). عندما تستخدم ANTHROPIC_BASE_URL لسيرفر غير تابع لـ Anthropic، هذا المتغير يتحكم في سلوك الأدوات.</td>
     </tr>
   </table>
 
-  <h3>ماذا عن <code>--bare</code> و <code>CLAUDE_CODE_SIMPLE</code>؟</h3>
-  <p><code>--bare</code> و <code>CLAUDE_CODE_SIMPLE</code> هي خيارات إضافية لتعطيل ميزات متقدمة (مثل hooks, LSP, plugins, keychain). <strong>ليست ضرورية</strong> لتجاوز تسجيل الدخول. المفاتيح الأساسية هي <code>ANTHROPIC_BASE_URL</code> و <code>ANTHROPIC_API_KEY</code> فقط.</p>
+  <h3>إعدادات إضافية في settings.json (v2.1.166+)</h3>
+  <p>بالإضافة إلى المتغيرات البيئية، يمكنك استخدام هذه الإعدادات في ملف <code>~/.claude/settings.json</code>:</p>
 
-  <div class="success">
-    <strong>الخلاصة:</strong> كل طلبات Claude Code تذهب إلى سيرفر SGLang المحلي فقط. لا شيء يغادر شبكتك المحلية. لا يحتاج أي اتصال بالإنترنت. لا يحتاج أي حساب أو تسجيل دخول.
-  </div>
-</div>
+  <table>
+    <tr><th>الإعداد</th><th>الوظيفة</th></tr>
+    <tr>
+      <td><code>fallbackModel</code></td>
+      <td>يحدد حتى 3 موديلات احتياطية (fallback) عندما يكون الموديل الأساسي غير متاح أو محملا فوق طاقته. مفيد جدا للبيئة المحلية: إذا كان DeepSeek V4 Flash مشغولا، يمكنك تعيين موديل احتياطي آخر على نفس سيرفر SGLang. مثال:
+      <pre>"fallbackModel": [
+  "DeepSeek-V4-Flash",
+  "DeepSeek-V3-Lite",
+  "Qwen3-Coder-32B"
+]</pre>
+      </td>
+    </tr>
+    <tr>
+      <td><code>disableBundledSkills</code></td>
+      <td>يعطل الـ skills المضمنة والأوامر slash commands المدمجة. مثال: <code>"disableBundledSkills": true</code>. (يتطلب v2.1.169+)</td>
+    </tr>
+  </table>
+</section>
 
-<!-- الفرق بين orifices التشغيل -->
-<div class="section">
+<!-- RUNNING MODES -->
+<section class="section">
   <h2>طرق التشغيل</h2>
+
   <table>
-    <tr><th>الطريقة</th><th>الأمر</th><th>الاستخدام</th></tr>
+    <tr><th>الطريقة</th><th>الأمر</th><th>الوصف</th></tr>
     <tr>
-      <td>تفاعلي (REPL)</td>
+      <td>وضع تفاعلي (REPL)</td>
       <td><code>claude --model DeepSeek-V4-Flash</code></td>
-      <td>جلسة كاملة تكتب فيها أوامر متعددة. الأفضل للبرمجة.</td>
+      <td>جلسة كاملة متعددة الأدوار. الأنسب للتطوير والبرمجة.</td>
     </tr>
     <tr>
-      <td>أمر واحد (One-shot)</td>
-      <td><code>claude --bare -p "الأمر"</code></td>
-      <td>سؤال واحد وخلاص. مفيد للسكربتات.</td>
+      <td>أمر لمرة واحدة</td>
+      <td><code>claude --bare -p "..."</code></td>
+      <td>سؤال واحد مع رد مباشر. مناسب للسكربتات وخطوط الأنابيب.</td>
     </tr>
     <tr>
-      <td>من STDIN</td>
-      <td><code>echo "hi" | claude --bare</code></td>
-      <td>تمرير النص من pipe.</td>
+      <td>إدخال من STDIN</td>
+      <td><code>echo "..." | claude --bare</code></td>
+      <td>تمرير النص عبر pipe.</td>
     </tr>
     <tr>
-      <td>مع صلاحيات كاملة</td>
+      <td>وضع بدون أذونات</td>
       <td><code>claude --model DeepSeek-V4-Flash --permission-mode bypassPermissions</code></td>
-      <td>بدون طلب إذن لكل أمر.</td>
-    </tr>
-  </table>
-</div>
-
-<!-- المميزات التي تعمل أوفلاين -->
-<div class="section">
-  <h2>المميزات التي تعمل أوفلاين بالكامل</h2>
-  <p>جميع المميزات التالية تعمل <strong>بدون إنترنت</strong> لأنها إما مضمنة في الـ binary أو تستخدم API السيرفر المحلي:</p>
-
-  <table>
-    <tr><th>الميزة</th><th>الحالة</th><th>التفاصيل</th></tr>
-    <tr>
-      <td><code>/agents</code> - إنشاء وإدارة الوكلاء</td>
-      <td>✅ شغال</td>
-      <td>تعريفات الوكلاء مخزنة محلياً في <code>~/.claude/plugins/</code>. يستخدمون نفس API السيرفر المحلي.</td>
-    </tr>
-    <tr>
-      <td><code>/add-dir</code>, <code>/cd</code></td>
-      <td>✅ شغال</td>
-      <td>عمليات ملفات محلية بحتة</td>
-    </tr>
-    <tr>
-      <td><code>/background</code></td>
-      <td>✅ شغال</td>
-      <td>إدارة عمليات محلية</td>
-    </tr>
-    <tr>
-      <td><code>/branch</code>, <code>/clear</code>, <code>/resume</code></td>
-      <td>✅ شغال</td>
-      <td>إدارة جلسات محلية على القرص</td>
-    </tr>
-    <tr>
-      <td><code>/btw</code> - سؤال جانبي</td>
-      <td>✅ شغال</td>
-      <td>يستخدم نفس API السيرفر المحلي</td>
-    </tr>
-    <tr>
-      <td><code>/color</code>, <code>/config</code></td>
-      <td>✅ شغال</td>
-      <td>إعدادات محلية</td>
-    </tr>
-    <tr>
-      <td><code>/compact</code>, <code>/context</code></td>
-      <td>✅ شغال</td>
-      <td>إدارة ذاكرة السياق محلياً</td>
-    </tr>
-    <tr>
-      <td><code>/copy</code>, <code>/diff</code></td>
-      <td>✅ شغال</td>
-      <td>عمليات حافظة و Git محلية</td>
-    </tr>
-    <tr>
-      <td><code>/doctor</code></td>
-      <td>✅ شغال</td>
-      <td>يفحص الإعدادات المحلية والاتصال بالسيرفر المحدد</td>
-    </tr>
-    <tr>
-      <td><code>/help</code></td>
-      <td>✅ شغال</td>
-      <td>مضمن في الـ binary</td>
-    </tr>
-    <tr>
-      <td>أدوات Bash, Edit, Read, Glob, Grep</td>
-      <td>✅ شغال</td>
-      <td>أدوات محلية مضمنة في Claude Code</td>
-    </tr>
-    <tr>
-      <td>استدعاء Sub-agents</td>
-      <td>✅ شغال</td>
-      <td>يستخدمون نفس API السيرفر المحلي ونفس الأدوات المحلية</td>
+      <td>ينفذ الأوامر دون طلب موافقة لكل إجراء.</td>
     </tr>
   </table>
 
-  <div class="warning">
-    <strong>ملاحظة:</strong> الإضافات الخارجية (MCP) مثل GitHub, GitLab, Linear, Discord تتطلب اتصال بالإنترنت للوصول لخدماتها - هذه <strong>لن تعمل</strong> في البيئة المعزولة تماماً. لكنها ليست ضرورية لعمل Claude Code الأساسي. الـ agents المضمنة والـ slash commands كلها تعمل محلياً.
+  <div class="note">
+    <strong>ملاحظة:</strong> --bare يعطل الميزات المتقدمة مثل hooks و LSP و plugin sync و keychain reads. إذا احتجت هذه الميزات، شغل بدون --bare.
   </div>
+</section>
 
-  <div class="success">
-    <strong>الخلاصة:</strong> Claude Code يعمل بكامل ميزاته الأساسية (REPL تفاعلي، وكلاء، أدوات برمجية، أوامر) أوفلاين بالكامل مع سيرفر SGLang المحلي. فقط الإضافات التي تتصل بخدمات خارجية (GitHub, GitLab, ...) لا تعمل - وهذا متوقع في بيئة معزولة.
-  </div>
-</div>
+<!-- VERIFICATION -->
+<section class="section">
+  <h2>التحقق من صحة العمل</h2>
+  <p>لتتأكد أن Claude Code يعمل بشكل صحيح مع سيرفر SGLang المحلي، اتبع هذه الخطوات:</p>
 
-<!-- شرح كل أمر -->
-<div class="section">
-  <h2>شرح جميع أوامر / slash commands</h2>
+  <h3>1. التحقق من اتصال السيرفر</h3>
+  <p>تأكد أن سيرفر SGLang يستجيب:</p>
+
+  <pre><span class="comment"># اختبار قائمة الموديلات</span>
+curl http://TBD:30000/v1/models
+
+<span class="comment"># يجب أن ترى رد مثل:</span>
+<span class="output">{
+  "object": "list",
+  "data": [
+    { "id": "DeepSeek-V4-Flash", "object": "model" }
+  ]
+}</span></pre>
+
+  <h3>2. التحقق من إصدار Claude Code</h3>
+  <pre><span class="comment"># تأكد أن الأمر معروف</span>
+claude --version
+
+<span class="comment"># النتيجة المتوقعة:</span>
+<span class="output">2.1.170</span></pre>
+
+  <h3>3. اختبار أمر لمرة واحدة</h3>
+  <pre><span class="comment"># شغل مع متغيرات البيئة</span>
+set ANTHROPIC_BASE_URL=http://TBD:30000
+set ANTHROPIC_API_KEY=sk-offline
+set ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash
+set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+claude --bare -p "اكتب كلمة مرحبا"
+
+<span class="comment"># إذا رأيت ردا (وليس خطأ اتصال) فالعمل صحيح.</span></pre>
+
+  <h3>4. اختبار الوضع التفاعلي</h3>
+  <pre><span class="comment"># في نافذة تيرمينال جديدة</span>
+set ANTHROPIC_BASE_URL=http://TBD:30000
+set ANTHROPIC_API_KEY=sk-offline
+set ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash
+set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+claude --model DeepSeek-V4-Flash</pre>
+
+  <p>إذا فتح REPL وظهرت شاشة الترحيب، فكل شيء يعمل بشكل صحيح.</p>
+
+  <h3>5. اختبار /agents</h3>
+  <p>داخل جلسة Claude Code، اكتب <code>/agents</code> لعرض قائمة الوكلاء المتاحين. إذا ظهرت القائمة، فالميزة تعمل.</p>
+</section>
+
+<!-- SLASH COMMANDS -->
+<section class="section">
+  <h2>جميع الأوامر slash commands</h2>
+  <p>الأوامر التالية متاحة داخل جلسة Claude Code. كلها تعمل أوفلاين (إما محليا أو عبر API السيرفر المحلي) باستثناء WebFetch و WebSearch اللذين يحتاجان اتصال إنترنت حقيقي.</p>
 
   <table>
-    <tr><th>الأمر</th><th>الوظيفة</th><th>نوع التنفيذ</th><th>أوفلاين؟</th></tr>
+    <tr><th>الأمر</th><th>وظيفته واستخدامه</th><th>النوع</th></tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">إدارة الجلسة</td></tr>
+    <tr class="table-group"><td colspan="3">إدارة الجلسة</td></tr>
     <tr>
       <td><code>/clear</code></td>
-      <td>يبدأ جلسة جديدة بذاكرة فارغة. الجلسة السابقة تبقى على القرص وترجع لها بـ /resume</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>مسح سياق المحادثة وبدء جلسة جديدة.</strong> الجلسة السابقة تبقى محفوظة على القرص ويمكن استئنافها لاحقا بـ /resume. إذا كنت تريد تحرير مساحة السياق مع الاستمرار في نفس المحادثة، استخدم /compact بدلا منه. (بدائل: /reset, /new)</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/branch</code></td>
-      <td>ينسخ الجلسة الحالية كنقطة تفرع عشان تجرب مسار مختلف</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/branch [name]</code></td>
+      <td><strong>إنشاء نسخة متفرعة من المحادثة الحالية.</strong> يأخذ المحادثة كما هي وينسخها إلى جلسة جديدة منفصلة، ويتحول إليها مباشرة. الجلسة الأصلية تبقى كما هي ويمكن الرجوع إليها بـ /resume. مفيد عندما تريد تجربة اتجاه مختلف دون المخاطرة بفقدان المحادثة الأصلية. إذا كنت تريد تفويض مهمة جانبية لوكيل في الخلفية بدلا من التفرع بنفسك، استخدم /fork. (البديل: /fork في الإصدارات القديمة)</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/resume</code></td>
-      <td>يرجع لجلسة سابقة من قائمة الجلسات المحفوظة</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/resume [session]</code></td>
+      <td><strong>استئناف جلسة سابقة.</strong> يمكنك تحديد الجلسة بواسطة معرفها أو اسمها، أو تركها فارغة لفتح منتقي الجلسات التفاعلي. جميع الجلسات المحفوظة (بما في ذلك جلسات الخلفية) تظهر في القائمة. (البديل: /continue)</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/background</code></td>
-      <td>يرسل الجلسة للخلفية ويحرر التيرمينال</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/background [prompt]</code></td>
+      <td><strong>فصل الجلسة الحالية لتعمل في الخلفية وتحرير التيرمينال.</strong> يمكنك تمرير تعليمة إضافية قبل الانفصال. لعرض وإدارة جلسات الخلفية، استخدم <code>claude agents</code> من تيرمينال آخر. الجلسات في الخلفية تظهر في /resume مع علامة "bg". (البديل: /bg)</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/compact</code></td>
-      <td>يضغط السياق بتلخيص المحادثة لتوفير مساحة</td>
-      <td>API</td><td>✅</td>
+      <td><code>/compact [instructions]</code></td>
+      <td><strong>تلخيص المحادثة لتوفير مساحة السياق.</strong> يقوم Claude بتلخيص المحادثة حتى الآن مع الحفاظ على المعلومات المهمة. يمكنك تمرير تعليمات تركيز اختيارية، مثل: <code>/compact focus on edited files and todos</code> ليخبر Claude بما يجب الحفاظ عليه. يختلف عن /clear بأنه يستمر في نفس الجلسة بدلا من بدء جلسة جديدة.</td>
+      <td>API</td>
     </tr>
     <tr>
-      <td><code>/context</code></td>
-      <td>يعرض استهلاك السياق الحالي كشبكة ملونة</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/context [all]</code></td>
+      <td><strong>عرض استهلاك السياق الحالي على شكل شبكة ملونة.</strong> يظهر كل عنصر في السياق (رسائل، ملفات، أدوات) وحجمه النسبي. في وضع الملء، تكون العناصر مطوية للحفاظ على الشبكة مرئية. استخدم <code>/context all</code> لتوسيع جميع العناصر ورؤية التفاصيل الكاملة. مفيد لمعرفة ما يستهلك مساحة السياق قبل استخدام /compact.</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/session-id</code></td>
-      <td>يعرض معرف الجلسة الحالي</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/fork [directive]</code></td>
+      <td><strong>إنشاء وكيل فرعي في الخلفية يرث المحادثة الحالية.</strong> يعمل الوكيل على التعليمات التي تمررها أثناء استمرارك في المحادثة الأصلية. نتيجتها تعود إلى محادثتك عندما ينتهي. يختلف عن /branch بأن /branch يحولك أنت إلى نسخة، بينما /fork يفوض المهمة لوكيل آخر. (قبل v2.1.161 كان /fork مرادفا لـ /branch)</td>
+      <td>API</td>
     </tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الملفات والمشاريع</td></tr>
+    <tr class="table-group"><td colspan="3">الملفات والمشاريع</td></tr>
     <tr>
-      <td><code>/add-dir</code></td>
-      <td>يضيف مجلد عمل جديد للجلسة</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/add-dir &lt;path&gt;</code></td>
+      <td><strong>إضافة مجلد عمل إضافي للجلسة الحالية.</strong> يمنح Claude صلاحية الوصول لملفات المجلد المضاف. معظم إعدادات .claude/ لا تُكتشف من المجلد المضاف. يمكنك لاحقا استئناف الجلسة من المجلد المضاف باستخدام --continue أو --resume.</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/cd</code></td>
-      <td>ينقل الجلسة إلى مجلد عمل جديد</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/cd &lt;path&gt;</code></td>
+      <td><strong>نقل الجلسة إلى مجلد عمل جديد.</strong> ذاكرة المحادثة المخبأة تبقى محفوظة: ملف CLAUDE.md من المجلد الجديد يضاف كرسالة بدلا من إعادة بناء system prompt. الجلسة تنقل إلى مجلد المشروع الجديد، لذلك /resume و /continue سيجدانها هناك. إذا لم تثق بالمجلد من قبل، سيطلب منك تأكيد الثقة. (يتطلب v2.1.169+)</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>/diff</code></td>
-      <td>يعرض التغييرات غير المرفوعة (unstaged) وفروق كل جولة</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>عرض التغييرات غير المرفوعة وفروقات كل جولة.</strong> يفتح عارضا تفاعليا. استخدم الأسهم اليمين/اليسار للتبديل بين diff الحالي وجولات Claude، والأسهم أعلى/أسفل لتصفح الملفات. مفيد قبل رفع التغييرات لمراجعة ما تم تغييره.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>/init</code></td>
-      <td>ينشئ ملف CLAUDE.md مع تعليمات للمشروع</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>تهيئة المشروع بملف CLAUDE.md.</strong> ينشئ ملف CLAUDE.md يحتوي على تعليمات للمشروع ليساعد Claude على فهم السياق. إذا كان CLAUDE_CODE_NEW_INIT=1، يفتح وضعا تفاعليا يرشدك خلال إعداد الملفات الشخصية والـ skills و hooks.</td>
+      <td>محلي</td>
     </tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الوكلاء (Agents)</td></tr>
+    <tr class="table-group"><td colspan="3">الوكلاء (Agents)</td></tr>
     <tr>
       <td><code>/agents</code></td>
-      <td>يدير الـ agents (وكلاء متخصصين). يعرض القائمة، ينشئ، يشغّل وكلاء.</td>
-      <td>محلي + API</td><td>✅</td>
-    </tr>
-    <tr>
-      <td><code>/fork</code></td>
-      <td>يحوّل الجلسة الحالية إلى وكيل متخصص / agent</td>
-      <td>محلي + API</td><td>✅</td>
-    </tr>
-    <tr>
-      <td>استدعاء Sub-agent</td>
-      <td>Claude ينشئ وكيل فرعي للمهام المعقدة. الوكيل الجديد يستخدم نفس API السيرفر.</td>
-      <td>API</td><td>✅</td>
+      <td><strong>إدارة تكوينات الوكلاء (sub-agents).</strong> يفتح مدير الوكلاء لإنشاء وحذف وعرض وتشغيل وكلاء متخصصين. الوكلاء هم جلسات Claude Code مستقلة يمكنها التفويض بمهام جانبية (مثل مراجعة الكود أو كتابة الاختبارات). يمكن لكل وكيل أن يكون له شخصيته الخاصة وتعليماته المخصصة. جميع الوكلاء يستخدمون نفس API السيرفر المحلي.</td>
+      <td>محلي + API</td>
     </tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الأسئلة والمحادثة</td></tr>
+    <tr class="table-group"><td colspan="3">الاستعلام والمحادثة</td></tr>
     <tr>
-      <td><code>/btw</code></td>
-      <td>يسأل سؤال جانبي سريع دون مقاطعة المحادثة الرئيسية</td>
-      <td>API</td><td>✅</td>
+      <td><code>/btw &lt;question&gt;</code></td>
+      <td><strong>طرح سؤال جانبي سريع دون مقاطعة المحادثة الرئيسية.</strong> يعمل عن طريق إنشاء وكيل مؤقت عابر بدون أدوات - لا يمكنه قراءة ملفات أو تشغيل أوامر. يرد مرة واحدة بناء على سياق المحادثة الحالي فقط، ثم يختفي. السؤال والرد لا يدخلان في تاريخ المحادثة الرئيسي أبدا. يمكنك أيضا كتابة "btw" (أحرف صغيرة) في بداية رسالتك وسيكتشفه Claude Code تلقائيا.</td>
+      <td>API</td>
     </tr>
     <tr>
-      <td><code>/copy</code></td>
-      <td>ينسخ آخر رد من Claude إلى الحافظة (أو /copy N للرد رقم N)</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/copy [N]</code></td>
+      <td><strong>نسخ آخر رد من المساعد إلى الحافظة.</strong> /copy 2 ينسخ الرد قبل الأخير. عندما يكون هناك code blocks، يظهر منتقي تفاعلي لاختيار مقتطف معين أو الرد كاملا. اضغط w في المنتقي لكتابة التحديد إلى ملف بدلا من الحافظة (مفيد عبر SSH).</td>
+      <td>محلي</td>
+    </tr>
+    <tr>
+      <td><code>/rename &lt;name&gt;</code></td>
+      <td><strong>تسمية الجلسة الحالية.</strong> الاسم يظهر في /resume وفي عنوان التيرمينال. يمكنك استئناف جلسة مسماة باستخدام <code>claude --resume &lt;name&gt;</code>.</td>
+      <td>محلي</td>
     </tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الإعدادات والتخصيص</td></tr>
+    <tr class="table-group"><td colspan="3">الإعدادات والتخصيص</td></tr>
     <tr>
       <td><code>/config</code></td>
-      <td>يفتح الإعدادات (settings.json) للتعديل</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>فتح واجهة الإعدادات لتعديل الثيم، الموديل، نمط الإخراج، والتفضيلات الأخرى.</strong> (البديل: /settings)</td>
+      <td>محلي</td>
     </tr>
     <tr>
-      <td><code>/color</code></td>
-      <td>يغير لون شريط الأوامر للجلسة الحالية</td>
-      <td>محلي</td><td>✅</td>
+      <td><code>/color [color|default]</code></td>
+      <td><strong>تغيير لون شريط الأوامر للجلسة.</strong> الألوان: red, blue, green, yellow, purple, orange, pink, cyan. /color default يعيد اللون الافتراضي. بدون وسيط يختار لونا عشوائيا.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>/doctor</code></td>
-      <td>يشخص مشاكل التثبيت والإعدادات ويتحقق من صحة الاتصال</td>
-      <td>محلي + API</td><td>✅</td>
+      <td><strong>تشخيص التثبيت والإعدادات والتحقق من صحة العمل.</strong> يتحقق من البيئة والإعدادات والاتصال. النتائج تظهر مع أيقونات الحالة. اضغط f ليحاول Claude إصلاح أي مشاكل تلقائيا. يفضل تشغيله بعد التثبيت للتأكد من أن كل شيء يعمل.</td>
+      <td>محلي + API</td>
     </tr>
     <tr>
       <td><code>/help</code></td>
-      <td>يعرض قائمة الأوامر المتاحة مع شرح مختصر</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>عرض قائمة الأوامر المتاحة.</strong> اكتب / في أي وقت داخل الجلسة لرؤية القائمة الكاملة.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>/release-notes</code></td>
-      <td>يعرض ملاحظات الإصدار والتحديثات</td>
-      <td>محلي</td><td>✅</td>
-    </tr>
-    <tr>
-      <td><code>/version</code></td>
-      <td>يعرض رقم إصدار Claude Code</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>عرض سجل التغييرات (changelog).</strong> يفتح منتقي إصدارات تفاعلي لتصفح ملاحظات الإصدار واختيار إصدار معين.</td>
+      <td>محلي</td>
     </tr>
 
-    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الأدوات المضمنة (Tools)</td></tr>
+    <tr class="table-group"><td colspan="3">الأدوات المضمنة (Tools)</td></tr>
     <tr>
       <td><code>Bash</code></td>
-      <td>تنفيذ أوامر الشيل (PowerShell, CMD, Bash)</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>تنفيذ أوامر الشيل (PowerShell, CMD, Bash).</strong> يدعم timeout اختياري وتشغيل الأوامر في الخلفية. الأداة الأساسية لتفاعل Claude مع نظام التشغيل.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>Edit</code></td>
-      <td>تعديل محتويات الملفات في المكان</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>تعديل محتويات الملفات في مكانها.</strong> يستبدل نصوصا محددة داخل الملفات. يدعم replace_all لاستبدال جميع التكرارات. آمن لأنه يتطلب مطابقة تامة للنص القديم.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>Read</code></td>
-      <td>قراءة ملفات، صور، PDF، دفاتر (notebooks)</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>قراءة الملفات والصور وملفات PDF و Jupyter Notebooks.</strong> يدعم قراءة أجزاء محددة باستخدام offset و limit.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>Glob</code></td>
-      <td>بحث سريع عن الملفات بأنماط glob</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>البحث عن الملفات بأنماط glob.</strong> سريع في قواعد الأكواد الكبيرة. يدعم أنماطا مثل **/*.js.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>Grep</code></td>
-      <td>بحث عن نصوص في محتويات الملفات</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>البحث عن نصوص في محتويات الملفات باستخدام regex.</strong> يدعم regex كامل وتصفية الملفات بنمط include.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>TodoWrite</code></td>
-      <td>إنشاء وإدارة قائمة مهام منظمة</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>إنشاء وإدارة قائمة مهام منظمة.</strong> يتتبع الخطوات المتعددة والمهام المعقدة مع تحديث الحالات والأولويات.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>LS</code></td>
-      <td>سرد محتويات المجلدات</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>سرد محتويات المجلدات.</strong> يعرض محتويات مجلد معين مع تمييز المجلدات الفرعية.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>NotebookRead</code></td>
-      <td>قراءة ملفات Jupyter Notebook (.ipynb)</td>
-      <td>محلي</td><td>✅</td>
+      <td><strong>قراءة ملفات Jupyter Notebook (.ipynb).</strong> يستخرج الخلايا والمخرجات من ملفات الدفاتر.</td>
+      <td>محلي</td>
     </tr>
     <tr>
       <td><code>WebFetch</code></td>
-      <td>جلب محتوى من URL (يحتاج اتصال)</td>
-      <td>شبكة</td><td>❌</td>
+      <td><strong>جلب محتوى من URL.</strong> يحول الصفحات إلى نص أو markdown. (لا يعمل بدون إنترنت)</td>
+      <td>شبكة</td>
     </tr>
     <tr>
       <td><code>WebSearch</code></td>
-      <td>بحث في الويب (يحتاج اتصال)</td>
-      <td>شبكة</td><td>❌</td>
+      <td><strong>البحث في الويب.</strong> يبحث عن معلومات حديثة من الإنترنت. (لا يعمل بدون إنترنت)</td>
+      <td>شبكة</td>
     </tr>
   </table>
 
   <div class="note">
-    <strong>إيضاح:</strong>
-    <ul>
-      <li><strong>محلي</strong> - الأمر ينفذ كلياً على جهازك بدون أي اتصال</li>
-      <li><strong>API</strong> - الأمر يحتاج الاتصال بـ API (سيرفر SGLang المحلي)</li>
-      <li><strong>شبكة</strong> - الأمر يحتاج إنترنت حقيقي (لن يعمل في بيئة معزولة)</li>
-    </ul>
-    فقط <code>WebFetch</code> و <code>WebSearch</code> يحتاجون إنترنت حقيقي. كل شيء آخر يشتغل أوفلاين مع سيرفر SGLang المحلي.
+    <strong>تصنيف الأنواع:</strong>
+    <strong>محلي</strong> - ينفذ بالكامل على جهازك دون أي اتصال خارجي.
+    <strong>API</strong> - يحتاج الاتصال بسيرفر SGLang المحلي (وليس بالإنترنت).
+    <strong>شبكة</strong> - يحتاج اتصال إنترنت حقيقي (لن يعمل في بيئة معزولة عن الإنترنت). فقط WebFetch و WebSearch من هذا النوع.
   </div>
-</div>
+</section>
 
-<!-- إعداد سيرفر SGLang -->
-<div class="section">
-  <h2>إعداد سيرفر SGLang (DeepSeek V4 Flash)</h2>
+<!-- HOW IT WORKS -->
+<section class="section">
+  <h2>كيف يعمل النظام</h2>
 
-  <h3>تشغيل SGLang Container على RHEL (Podman)</h3>
-  <pre><span class="comment"># تشغيل DeepSeek V4 Flash مع دعم Anthropic API</span>
+  <pre style="text-align: center; line-height: 2; direction: ltr;">
+  +-------------------------------------------------------+
+  |                  Client Machine                        |
+  |  +------------------+       +----------------------+  |
+  |  |   Claude Code    | --->  |  SGLang Server       |  |
+  |  |   (REPL / CLI)   |HTTP   |  (RHEL / Podman)     |  |
+  |  |                  |:30000 |  /v1/messages        |  |
+  |  |  Tools:          | <---  |  DeepSeek V4 Flash   |  |
+  |  |  Bash, Edit,     | JSON  |  CUDA 13             |  |
+  |  |  Read, Glob, ... |       +----------------------+  |
+  |  +------------------+                                  |
+  |         |                                               |
+  |         v                                               |
+  |  +------------------+                                   |
+  |  |  Project Files   |  read/write locally              |
+  |  +------------------+                                   |
+  |                                                         |
+  |  No Internet    No Login    No Telemetry                |
+  +-------------------------------------------------------+
+  </pre>
+
+  <h3>آلية العمل</h3>
+  <ol>
+    <li><strong>Claude Code</strong> يرسل طلب POST إلى /v1/messages على سيرفر SGLang المحلي</li>
+    <li><strong>SGLang</strong> يستقبل الطلب بصيغة Anthropic Messages API ويترجمه إلى صيغته الداخلية</li>
+    <li><strong>DeepSeek V4 Flash</strong> يعالج الطلب ويولد الرد</li>
+    <li><strong>SGLang</strong> يرد على Claude Code بنفس صيغة Anthropic API</li>
+    <li><strong>Claude Code</strong> يستخدم الأدوات المضمنة (Bash, Edit, Read...) لتنفيذ المهام على جهازك</li>
+  </ol>
+
+  <h3>لماذا لا يحتاج تسجيل دخول</h3>
+  <table>
+    <tr><th>المكون</th><th>الدور في تجاوز تسجيل الدخول</th></tr>
+    <tr>
+      <td><code>ANTHROPIC_BASE_URL</code></td>
+      <td>يغير وجهة API من api.anthropic.com إلى سيرفرك المحلي. كل طلب POST يذهب إلى سيرفرك بدلا من خوادم Anthropic.</td>
+    </tr>
+    <tr>
+      <td><code>ANTHROPIC_API_KEY</code></td>
+      <td>أي قيمة وهمية تكفي. Claude Code يتحقق من وجود المفتاح فقط وليس من صحته. وجود المفتاح يمنع ظهور شاشة تسجيل الدخول.</td>
+    </tr>
+    <tr>
+      <td><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code></td>
+      <td>يمنع أي طلب HTTP خارجي غير متعلق بالـ API (تليمتري، إحصائيات، استبيانات، تحديثات).</td>
+    </tr>
+  </table>
+</section>
+
+<!-- SGLANG SETUP -->
+<section class="section">
+  <h2>إعداد سيرفر SGLang</h2>
+
+  <h3>تشغيل DeepSeek V4 Flash على RHEL مع Podman</h3>
+
+  <pre><span class="comment"># تشغيل SGLang Container مع دعم Anthropic API</span>
 podman run --gpus all \
   --shm-size 32g \
   -p 30000:30000 \
@@ -771,39 +967,38 @@ podman run --gpus all \
   python3 -m sglang.launch_server \
     --model-path /models/DeepSeek-V4-Flash \
     --tp 4 \
-    --moe-runner-backend flashinfer_mxfp4 \
-    --enable-deepseek-v4-fp4-indexer \
-    --tool-call-parser deepseekv3 \
     --host 0.0.0.0 \
-    --port 30000</pre>
+    --port 30000 \
+    --tool-call-parser deepseekv3</pre>
 
-  <h3>اختبار الاتصال بـ Anthropic API</h3>
+  <div class="note">
+    <strong>ملاحظة هامة:</strong> الـ flag <code>--tool-call-parser deepseekv3</code> ضروري لدعم Claude Code في استدعاء الأدوات مثل Bash و Edit و Read. تأكد من إضافته.
+  </div>
+
+  <h3>اختبار السيرفر</h3>
+
   <pre><span class="comment"># اختبار قائمة الموديلات</span>
 curl http://TBD:30000/v1/models
 
-<span class="comment"># اختبار /v1/messages (Anthropic API مباشر)</span>
+<span class="comment"># اختبار الرسائل (Anthropic API مباشرة)</span>
 curl -X POST http://TBD:30000/v1/messages \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: sk-offline" \
-  -H "anthropic-version: 2023-06-01" \
-  -d '{
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -H <span class="str">"x-api-key: sk-offline"</span> \
+  -H <span class="str">"anthropic-version: 2023-06-01"</span> \
+  -d <span class="str">'{
     "model": "DeepSeek-V4-Flash",
     "max_tokens": 100,
     "messages": [{"role": "user", "content": "Say hello"}]
-  }'</pre>
+  }'</span></pre>
+</section>
 
-  <div class="note">
-    <strong>ملاحظة:</strong> الـ <code>--tool-call-parser deepseekv3</code> ضروري لدعم Claude Code في استدعاء الأدوات (Bash, Edit, Read). تأكد من إضافته عند تشغيل SGLang.
-  </div>
-</div>
-
-<!-- استكشاف الأخطاء -->
-<div class="section">
+<!-- TROUBLESHOOTING -->
+<section class="section">
   <h2>استكشاف الأخطاء وإصلاحها</h2>
 
-  <div class="warning">
-    <strong>المشكلة:</strong> "claude is not recognized" أو الأمر غير معروف
-    <p><strong>الحل:</strong> افتح terminal جديد. أو أضف المسار يدويًا:</p>
+  <div class="warning-box">
+    <strong>claude is not recognized (الأمر غير معروف)</strong>
+    <p>افتح تيرمينال جديد. إذا استمرت المشكلة، أضف المسار يدويا:</p>
     <pre><span class="comment"># PowerShell:</span>
 $env:PATH = "$env:PATH;$env:USERPROFILE\.local\bin"
 
@@ -811,68 +1006,206 @@ $env:PATH = "$env:PATH;$env:USERPROFILE\.local\bin"
 set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   </div>
 
-  <div class="warning">
-    <strong>المشكلة:</strong> "There's an issue with the selected model (...) It may not exist"
-    <p><strong>الحل:</strong> سيرفر SGLang ما عنده الموديل. تأكد أن <code>--model-path</code> صحيح وأن الموديل مضبوط في SGLang. استخدم <code>curl /v1/models</code> لتتأكد من الموديلات المتاحة.</p>
+  <div class="warning-box">
+    <strong>There is an issue with the selected model (الموديل غير متاح)</strong>
+    <p>سيرفر SGLang لا يعرف الموديل المطلوب. استخدم curl للتأكد من الموديلات المتاحة:</p>
+    <pre>curl http://TBD:30000/v1/models</pre>
+    <p>ثم استخدم أحد الأسماء الظاهرة مع <code>--model</code>.</p>
   </div>
 
-  <div class="warning">
-    <strong>المشكلة:</strong> "connect ECONNREFUSED" أو "socket hang up"
-    <p><strong>الحل:</strong> سيرفر SGLang مو شغال أو الـ IP/port غلط. تأكد من:</p>
+  <div class="warning-box">
+    <strong>connect ECONNREFUSED (لا يمكن الاتصال بالسيرفر)</strong>
+    <p>سيرفر SGLang غير شغال أو IP/port غير صحيح. تحقق من:</p>
     <ul>
-      <li>السيرفر شغال: <code>curl http://[IP]:30000/v1/models</code></li>
-      <li>الـ IP صحيح في <code>ANTHROPIC_BASE_URL</code></li>
-      <li>الـ Firewall يسمح بالاتصال على port 30000</li>
+      <li>أن السيرفر شغال: <code>curl http://[IP]:30000/v1/models</code></li>
+      <li>صحة IP في ANTHROPIC_BASE_URL</li>
+      <li>الـ firewall يسمح بالاتصال على المنفذ 30000</li>
     </ul>
   </div>
 
-  <div class="warning">
-    <strong>المشكلة:</strong> يطلب تسجيل دخول (Login)
-    <p><strong>الحل:</strong> تأكد من أن:</p>
+  <div class="warning-box">
+    <strong>Claude Code يطلب تسجيل دخول (login)</strong>
+    <p>تأكد من:</p>
     <ul>
-      <li><code>ANTHROPIC_BASE_URL</code> مضبوط على سيرفرك المحلي</li>
-      <li><code>ANTHROPIC_API_KEY</code> موجود (أي قيمة وهمية)</li>
-      <li><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code></li>
+      <li>وجود <code>ANTHROPIC_BASE_URL</code> وتشير إلى سيرفرك المحلي</li>
+      <li>وجود <code>ANTHROPIC_API_KEY</code> بقيمة وهمية</li>
+      <li>وجود <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code></li>
+    </ul>
+    <p>إذا استمرت المشكلة، أضف <code>DISABLE_LOGIN_COMMAND=1</code> واستخدم <code>--bare</code>.</p>
+  </div>
+
+  <div class="warning-box">
+    <strong>النافذة تفتح وتقفل بسرعة (على Windows)</strong>
+    <p>سيرفر SGLang غير متاح، لذا Claude Code يخرج مباشرة. حلول:</p>
+    <ul>
+      <li>تأكد أن السيرفر شغال قبل تشغيل Claude Code</li>
+      <li>استخدم <code>claude --bare -p "..."</code> بدلا من الوضع التفاعلي</li>
+      <li>أو استخدم CMD بدلا من النقر المزدوج على ملف</li>
     </ul>
   </div>
 
-  <div class="warning">
-    <strong>المشكلة:</strong> النافذة تفتح وتقفل بسرعة
-    <p><strong>الحل:</strong> السيرفر مو شغال. اشتغل على السيرفر أولاً أو استخدم <code>claude --bare -p "..."</code> (one-shot) بدلاً من REPL.</p>
+  <div class="warning-box">
+    <strong>/doctor ليس متاحا في هذه البيئة</strong>
+    <p>أمر /doctor لا يعمل مع <code>--bare</code>. استخدمه في الوضع التفاعلي (بدون --bare).</p>
   </div>
-</div>
+</section>
 
-<!-- المتغيرات البيئية المرجعية -->
-<div class="section">
-  <h2>مرجع المتغيرات البيئية</h2>
+<!-- AGENTS -->
+<section class="section">
+  <h2>الوكلاء (Agents)</h2>
+
+  <p>Claude Code يدعم الوكلاء المتخصصين (sub-agents) الذين يمكن إنشاؤهم وتشغيلهم لإنجاز مهام محددة. جميع الوكلاء يعملون بشكل كامل أوفلاين.</p>
+
+  <h3>الأوامر المتعلقة بالوكلاء</h3>
   <table>
-    <tr><th>المتغير</th><th>ضروري؟</th><th>الغرض</th></tr>
-    <tr><td><code>ANTHROPIC_BASE_URL</code></td><td>نعم</td><td>يوجه Claude Code إلى سيرفر SGLang المحلي بدلاً من Anthropic cloud</td></tr>
-    <tr><td><code>ANTHROPIC_API_KEY</code></td><td>نعم</td><td>مفتاح API وهمي (SGLang يتجاهل قيمته) - يمنع طلب login</td></tr>
-    <tr><td><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code></td><td>موصى به</td><td>يمنع جميع الطلبات غير الأساسية (تليمتري، تحديثات، استبيانات)</td></tr>
-    <tr><td><code>DISABLE_AUTOUPDATER</code></td><td>موصى به</td><td>يمنع التحديثات التلقائية</td></tr>
-    <tr><td><code>DISABLE_TELEMETRY</code></td><td>اختياري</td><td>يمنع إرسال بيانات التليمتري</td></tr>
-    <tr><td><code>DO_NOT_TRACK</code></td><td>اختياري</td><td>نفس DISABLE_TELEMETRY</td></tr>
-    <tr><td><code>CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL</code></td><td>اختياري</td><td>يمنع التثبيت التلقائي للإضافات من المتجر</td></tr>
-    <tr><td><code>CLAUDE_CODE_DISABLE_BACKGROUND_TASKS</code></td><td>اختياري</td><td>يمنع المهام الخلفية</td></tr>
-    <tr><td><code>DISABLE_LOGIN_COMMAND</code></td><td>اختياري</td><td>يخفي أمر /login نهائيًا</td></tr>
-    <tr><td><code>CLAUDE_CODE_SIMPLE</code></td><td>اختياري</td><td>يعطل auto-discovery لـ hooks, skills, plugins. يفعّل وضع --print تلقائياً.</td></tr>
+    <tr><th>الأمر</th><th>الوظيفة</th></tr>
+    <tr><td><code>/agents</code></td><td>يفتح قائمة الوكلاء المتاحين. يمكنك عرض وصف كل وكيل وتشغيله أو إنشاء وكيل جديد.</td></tr>
+    <tr><td><code>/fork</code></td><td>يحول الجلسة الحالية إلى وكيل متخصص مع تعليمات مخصصة.</td></tr>
   </table>
-</div>
+
+  <h3>أنواع الوكلاء المضمنة</h3>
+  <p>الوكلاء التاليين مثبتين مسبقا من السوق الرسمي ومخزنين محليا:</p>
+  <ul>
+    <li><strong>code-architect</strong> - تصميم بنية المشاريع وتحليل الكود الموجود</li>
+    <li><strong>code-explorer</strong> - استكشاف قاعدة الكود وفهمها</li>
+    <li><strong>code-reviewer</strong> - مراجعة الكود واقتراح التحسينات</li>
+    <li><strong>legacy-analyst</strong> - تحليل الكود القديم</li>
+    <li><strong>security-auditor</strong> - مراجعة أمنية للكود</li>
+    <li><strong>test-engineer</strong> - كتابة واختبار الكود</li>
+    <li><strong>code-simplifier</strong> - تبسيط الكود وتحسين readability</li>
+    <li><strong>agent-creator</strong> - إنشاء وكلاء جدد</li>
+    <li><strong>conversation-analyzer</strong> - تحليل المحادثات</li>
+  </ul>
+
+  <p>يمكنك إنشاء وكلاء مخصصين بتعريفات خاصة بك عبر الأمر <code>/agents</code>.</p>
+
+  <h3>تشغيل عدة وكلاء في نفس الوقت (Multi-Agent)</h3>
+  <p>Claude Code يدعم تشغيل وكلاء متعددين بالتوازي، وجميعهم يشاركون نفس اتصال API مع سيرفر SGLang المحلي. لا يحتاجون أي اتصال إنترنت إضافي — كل الـ 9 وكلاء المضمنة والوكلاء المخصصين يعملون على نفس الموديل المحلي (DeepSeek V4 Flash).</p>
+
+  <h4>الآلية</h4>
+  <table>
+    <tr><th>الخطوة</th><th>الشرح</th></tr>
+    <tr>
+      <td>1. الجلسة الأم</td>
+      <td>جلسة Claude Code الرئيسية هي نقطة التحكم. منها توزع المهام على الوكلاء.</td>
+    </tr>
+    <tr>
+      <td>2. /fork لتفويض مهمة</td>
+      <td>استخدم <code>/fork [تعليمة]</code> داخل الجلسة لإنشاء وكيل فرعي في الخلفية يرث سياق المحادثة الحالية. الوكيل يعمل فورا وأنت تستمر في محادثتك الأصلية. النتيجة تعود إليك عند انتهائه.</td>
+    </tr>
+    <tr>
+      <td>3. /background لجلسة خلفية</td>
+      <td>استخدم <code>/background [تعليمة]</code> لتحويل جلستك الحالية بكاملها إلى خلفية (وكيل خلفي) وتحرير التيرمينال لجلسة جديدة.</td>
+    </tr>
+    <tr>
+      <td>4. عدة وكلاء بالتوازي</td>
+      <td>يمكنك تكرار /fork عدة مرات لتوزيع مهام مختلفة على وكلاء متعددين (مثلا: واحد يراجع الكود، واحد يكتب اختبارات، واحد يحلل الأمان). كل وكيل يستقبل طلباته الخاصة عبر API المحلي.</td>
+    </tr>
+    <tr>
+      <td>5. إدارة الوكلاء</td>
+      <td>من تيرمينال آخر، استخدم <code>claude agents</code> لعرض جميع وكلاء الخلفية. الجلسات الخلفية تظهر أيضا في /resume مع علامة "bg".</td>
+    </tr>
+  </table>
+
+  <h4>مثال عملي: تطوير مميزة كاملة بتوزيع المهام</h4>
+  <p>افترض أنك تريد إضافة نظام مصادقة (authentication) لمشروع:</p>
+
+  <pre><span class="comment"># 1. افتح جلسة Claude Code رئيسية (مع ANTHROPIC_DEFAULT_HAIKU_MODEL للمهام الخلفية)</span>
+  set ANTHROPIC_BASE_URL=http://TBD:30000
+  set ANTHROPIC_API_KEY=sk-offline
+  set ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash
+  claude --model DeepSeek-V4-Flash
+
+  <span class="comment"># 2. داخل الجلسة، ابدأ بتوزيع المهام على وكلاء متخصصين:</span>
+
+  <span class="comment"># وكيل لتصميم البنية (code-architect):</span>
+  /fork استخدم دورك كـ code-architect لتصميم بنية نظام مصادقة
+  يدعم JWT و OAuth2. اكتب خطة في ملف AUTH-ARCH.md
+
+  <span class="comment"># وكيل لمراجعة الكود الموجود (code-reviewer) - بالتوازي:</span>
+  /fork استخدم دورك كـ code-reviewer وراجع جميع ملفات auth
+  الموجودة في مجلد src/auth/. اكتب ملاحظاتك في CODE-REVIEW.md
+
+  <span class="comment"># يمكنك فتح وكيل ثالث في نفس الوقت:</span>
+  /fork استخدم دورك كـ security-auditor وحلل الثغرات الأمنية
+  المحتملة في src/auth/. اكتب تقريرا في SECURITY.md
+
+  <span class="comment"># 3. استمر في عملك في الجلسة الرئيسية أثناء عمل الوكلاء في الخلفية</span>
+  <span class="comment"># 4. عندما ينتهي كل وكيل، تظهر نتيجته في محادثتك تلقائيا</span>
+  <span class="comment"># 5. راجع النتائج واطلب من test-engineer كتابة اختبارات:</span>
+  /fork استخدم دورك كـ test-engineer واكتب اختبارات وحدة
+  لنظام المصادقة بناء على التصميم في AUTH-ARCH.md</pre>
+
+  <h4>إدارة وكلاء متعددين من تيرمينال منفصل</h4>
+  <p>يمكنك فتح نافذة تيرمينال جديدة والتحكم بكل الوكلاء العاملين:</p>
+
+  <pre><span class="comment"># عرض جميع الوكلاء النشطين وجلسات الخلفية</span>
+  claude agents
+
+  <span class="comment"># إرفاق بوكيل معين (attach)</span>
+  claude --resume &lt;session-id&gt;
+
+  <span class="comment"># إنهاء وكيل معين من داخل الجلسة</span>
+  /background stop</pre>
+
+  <h4>ملاحظات هامة للتشغيل الأوفلاين متعدد الوكلاء</h4>
+  <ul>
+    <li><strong>جميع الوكلاء يشاركون نفس API:</strong> كل وكيل يرسل طلباته إلى نفس سيرفر SGLang المحلي — لا يوجد اتصال خارجي.</li>
+    <li><strong>كل وكيل له سياقه المستقل:</strong> سياق كل وكيل منفصل تماما، مما يعني أن /fork يعطي كل وكيل نسخة من المحادثة عند نقطة التفويض.</li>
+    <li><strong>تأثير على أداء السيرفر:</strong> مع عدة وكلاء نشطين، سيرسلون طلبات متزامنة إلى SGLang. إذا لاحظت بطء، قلل عدد الوكلاء المتزامنين أو استخدم /compact لتقليل طول السياق.</li>
+    <li><strong>الوكلاء لا يستهلكون رصيد API:</strong> بما أن السيرفر محلي ولا توجد رسوم، يمكنك تشغيل أي عدد تريده من الوكلاء دون قيود.</li>
+    <li><strong>الوكلاء يعملون بدون --bare:</strong> يمكن للوكلاء استخدام جميع الأدوات (Bash, Edit, Read, Glob, Grep, TodoWrite, LS) لأنهم يعملون في جلسات كاملة وليس في وضع --bare.</li>
+    <li><strong>يجب ضبط ANTHROPIC_DEFAULT_HAIKU_MODEL:</strong> بدون هذا المتغير، المهام الخلفية (تسمية الوكلاء، تلخيص الجلسات) تحاول استخدام موديل Haiku من خوادم Anthropic وتفشل. اضبطه على نفس اسم موديل DeepSeek المحلي لضمان عمل جميع الوكلاء بشكل كامل أوفلاين.</li>
+  </ul>
+
+  <div class="note">
+    <strong>خلاصة:</strong> ميزة تعدد الوكلاء تعمل بكامل طاقتها أوفلاين. يمكنك تفويض مهام متعددة لـ 10 وكلاء بالتوازي، وجميعهم يرسلون طلباتهم إلى سيرفر SGLang المحلي دون الحاجة لأي اتصال إنترنت أو حساب مدفوع.
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section">
+  <h2>ملخص التشغيل الأوفلاين</h2>
+
+  <div class="success-box">
+    <strong>Claude Code يعمل بكامل طاقته أوفلاين</strong>
+    <ul>
+      <li>جميع slash commands تعمل (ما عدا WebFetch و WebSearch اللذان يحتاجان إنترنت)</li>
+      <li>الوكلاء (Agents) يعملون عبر API السيرفر المحلي</li>
+      <li>أدوات Bash, Edit, Read, Glob, Grep تعمل محليا</li>
+      <li>لا يحتاج أي حساب أو تسجيل دخول</li>
+      <li>لا يحتاج أي اتصال بالإنترنت</li>
+    </ul>
+  </div>
+
+  <div class="error-box">
+    <strong>ما لا يعمل بدون إنترنت</strong>
+    <ul>
+      <li>WebFetch - جلب محتوى من URL</li>
+      <li>WebSearch - البحث في الويب</li>
+      <li>إضافات MCP الخارجية (GitHub, GitLab, Linear, Discord) - تحتاج اتصالا بخدماتها</li>
+    </ul>
+    <p>هذه الميزات ليست ضرورية لعمل Claude Code كمحرر كود ذكي.</p>
+  </div>
+</section>
 
 <footer>
-  <p>Claude Code Offline v2.1.170 | DeepSeek V4 Flash + SGLang | CUDA 13 | Podman</p>
-  <p>تم الإعداد والاختبار: 2026</p>
+  <p>Claude Code Offline v2.1.170</p>
+  <p>DeepSeek V4 Flash + SGLang | CUDA 13 | Podman</p>
 </footer>
 
 </div>
 
 <script>
-function switchOS(os) {
-  document.querySelectorAll('.os-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.os-tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('os-' + os).classList.add('active');
-  if (event && event.target) event.target.classList.add('active');
+function switchOS(id) {
+  var tabs = document.querySelectorAll('.os-tab');
+  var contents = document.querySelectorAll('.os-content');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  contents.forEach(function(c) { c.classList.remove('active'); });
+  var activeTab = document.querySelector('.os-tab[onclick*="' + id + '"]');
+  if (activeTab) activeTab.classList.add('active');
+  var activeContent = document.getElementById('os-' + id);
+  if (activeContent) activeContent.classList.add('active');
 }
 </script>
 </body>

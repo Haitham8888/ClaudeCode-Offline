@@ -94,8 +94,8 @@ echo.
 echo  3. Or manually:
 echo     set ANTHROPIC_BASE_URL=http://TBD:30000
 echo     set ANTHROPIC_API_KEY=sk-offline
+echo     set ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash
 echo     set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-echo     set CLAUDE_CODE_SIMPLE=1
 echo.
 echo  4. Launch Claude Code:
 echo     claude --model DeepSeek-V4-Flash --bare

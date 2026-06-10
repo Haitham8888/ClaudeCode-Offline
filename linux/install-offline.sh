@@ -93,8 +93,13 @@ else
     "DO_NOT_TRACK": "1",
     "CLAUDE_CODE_DISABLE_OFFICIAL_MARKETPLACE_AUTOINSTALL": "1",
     "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1",
-    "DISABLE_LOGIN_COMMAND": "1"
-  }
+    "DISABLE_LOGIN_COMMAND": "1",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "DeepSeek-V4-Flash",
+    "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1"
+  },
+  "fallbackModel": [
+    "DeepSeek-V4-Flash"
+  ]
 }
 EOF
     echo "[✅] Default configuration created"
@@ -126,8 +131,8 @@ echo ""
 echo "  3. Or manually export variables:"
 echo "     export ANTHROPIC_BASE_URL=http://TBD:30000"
 echo "     export ANTHROPIC_API_KEY=sk-offline"
+echo "     export ANTHROPIC_DEFAULT_HAIKU_MODEL=DeepSeek-V4-Flash"
 echo "     export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
-echo "     export CLAUDE_CODE_SIMPLE=1"
 echo ""
 echo "  4. Launch Claude Code:"
 echo "     claude --model DeepSeek-V4-Flash --bare"
