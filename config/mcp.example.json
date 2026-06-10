@@ -1,15 +1,24 @@
 {
   "$schema": "https://json.schemastore.org/mcp",
-  "description": "Example MCP configuration for Claude Code offline browser debugging",
-  "instructions": "Place this file as .mcp.json in your project root, or merge the mcpServers block into ~/.claude/settings.json. Update the path to agent-browse/dist/index.js for your system.",
+  "description": "MCP configuration for Claude Code offline browser debugging",
+  "instructions": "Place as .mcp.json in project root, or merge mcpServers into ~/.claude/settings.json",
   "mcpServers": {
-    "agent-browse": {
+    "playwright": {
       "type": "stdio",
-      "command": "node",
+      "command": "npx",
       "args": [
-        "/absolute/path/to/agent-browse/dist/index.js"
+        "@playwright/mcp",
+        "--headless"
       ],
-      "description": "Browser automation with console, network, and error capture"
+      "description": "Microsoft Playwright MCP - browser automation with console & network capture (recommended)"
+    },
+    "agent-browser": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "agent-browser"
+      ],
+      "description": "Vercel Labs agent-browser - text-first accessibility tree browser tool"
     }
   }
 }

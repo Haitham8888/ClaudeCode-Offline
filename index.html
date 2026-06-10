@@ -420,33 +420,98 @@ ClaudeCode-Offline-Package/
 
 <!-- REQUIREMENTS -->
 <section class="section">
-  <h2>المتطلبات</h2>
+  <h2>المتطلبات الكاملة</h2>
 
-  <div class="grid-2">
-    <div>
-      <h3>Windows</h3>
-      <ul>
-        <li>Windows 10 (1903+) أو Windows 11</li>
-        <li>Git for Windows (<a href="https://git-scm.com">git-scm.com</a>)</li>
-        <li>اتصال شبكي بسيرفر SGLang على المنفذ 30000</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Linux (RHEL / Fedora)</h3>
-      <ul>
-        <li>RHEL 8+ / Fedora / CentOS / Rocky Linux</li>
-        <li>Git: <code>sudo dnf install git</code></li>
-        <li>اتصال شبكي بسيرفر SGLang على المنفذ 30000</li>
-      </ul>
-    </div>
+  <h3>A. السيرفر — شغال وجاهز (RHEL 10 + SGLang + DeepSeek V4 Flash)</h3>
+  <p>السيرفر شغال مسبقا ولا يحتاج أي تغيير:</p>
+  <ul>
+    <li><strong>المعالج:</strong> 4x H100 94GB GPUs</li>
+    <li><strong>النظام:</strong> RHEL 10 مع Podman + CUDA 13</li>
+    <li><strong>SGLang:</strong> شغال على <code>v0.5.12.post1</code> مع <code>/v1/messages</code> endpoint على منفذ 30000</li>
+    <li><strong>الموديل:</strong> DeepSeek V4 Flash محمّل مع <code>--tool-call-parser deepseekv3</code></li>
+    <li><strong>IP:</strong> متاح على <code>http://TBD:30000</code> على الشبكة المحلية</li>
+  </ul>
+  <div class="note">
+    <strong>السيرفر جاهز بالكامل.</strong> هذه الحزمة تخص الجهاز العميل فقط. لا تحتاج تثبيت SGLang أو تحميل الموديل — كل شيء موجود.
   </div>
 
-  <h3>سيرفر SGLang</h3>
-  <ul>
-    <li>يشغل DeepSeek V4 Flash على RHEL 10 مع Podman Container</li>
-    <li>المنفذ 30000 مفتوح على الشبكة المحلية</li>
-    <li>يدعم /v1/messages endpoint (PR #18630)</li>
-  </ul>
+  <h3>B. الجهاز العميل (Client — Windows / Linux)</h3>
+
+  <h4>إلزامي (يجب تثبيته)</h4>
+  <table>
+    <tr><th>البرنامج</th><th>الإصدار</th><th>Windows</th><th>Linux</th><th>الغرض</th></tr>
+    <tr>
+      <td><strong>Claude Code CLI</strong></td>
+      <td>v2.1.170</td>
+      <td><code>windows/claude.exe</code></td>
+      <td><code>linux/claude</code></td>
+      <td>وكيل البرمجة الذكي</td>
+    </tr>
+    <tr>
+      <td><strong>Git</strong></td>
+      <td>أي إصدار حديث</td>
+      <td><code>winget install Git.Git</code></td>
+      <td><code>sudo dnf install git</code></td>
+      <td>مطلوب من Claude Code</td>
+    </tr>
+    <tr>
+      <td><strong>Node.js</strong></td>
+      <td>18+</td>
+      <td><code>winget install OpenJS.NodeJS</code></td>
+      <td><code>sudo dnf install nodejs</code></td>
+      <td>مطلوب لمخدمات MCP</td>
+    </tr>
+  </table>
+
+  <h4>اختياري (موصى به)</h4>
+  <table>
+    <tr><th>البرنامج</th><th>الغرض</th><th>التثبيت</th></tr>
+    <tr>
+      <td><strong>VS Code</strong></td>
+      <td>محرر أكواد مع دمج Claude Code</td>
+      <td><code>winget install Microsoft.VisualStudioCode</code></td>
+    </tr>
+    <tr>
+      <td><strong>Playwright MCP (Microsoft)</strong></td>
+      <td>أداة فحص المتصفح — console, network, errors</td>
+      <td><code>npx @playwright/mcp</code></td>
+    </tr>
+    <tr>
+      <td><strong>agent-browser (Vercel Labs)</strong></td>
+      <td>أداة متصفح تعتمد على النص فقط (~200 توكين لكل صفحة)</td>
+      <td><code>npx agent-browser</code></td>
+    </tr>
+    <tr>
+      <td><strong>Chrome / Edge</strong></td>
+      <td>متصفح للاختبار اليدوي أو مع MCP</td>
+      <td><code>winget install Google.Chrome</code></td>
+    </tr>
+  </table>
+
+  <h4>متطلبات الشبكة</h4>
+  <table>
+    <tr><th>الاتجاه</th><th>المنفذ</th><th>البروتوكول</th><th>الغرض</th></tr>
+    <tr><td>عميل ← سيرفر SGLang</td><td>30000</td><td>HTTP (TCP)</td><td>طلبات AI inference</td></tr>
+    <tr><td>عميل ← localhost</td><td>أي</td><td>stdio/WebSocket</td><td>اتصال مخدمات MCP</td></tr>
+    <tr><td>عميل ← إنترنت</td><td>—</td><td>—</td><td><strong>غير مطلوب بعد التثبيت الأولي</strong></td></tr>
+  </table>
+
+  <h3>C. تعريفات ومفاهيم أساسية</h3>
+
+  <table>
+    <tr><th>المصطلح</th><th>التعريف</th></tr>
+    <tr><td><strong>Claude Code CLI</strong></td><td>وكيل البرمجة الذكي من Anthropic يعمل في التيرمينال. ينفذ المهام عبر اللغة الطبيعية.</td></tr>
+    <tr><td><strong>SGLang</strong></td><td>إطار عالي الأداء لتشغيل نماذج LLM. يشغل DeepSeek V4 Flash مع CUDA 13 batching على 4x H100.</td></tr>
+    <tr><td><strong>MCP (Model Context Protocol)</strong></td><td>بروتوكول مفتوح لتوصيل وكلاء AI بأدوات خارجية (متصفحات, قواعد بيانات, APIs).</td></tr>
+    <tr><td><strong>Playwright MCP</strong></td><td>مخدم MCP الرسمي من Microsoft لأتمتة المتصفح. يلتقط console, network, وهيكل الصفحة.</td></tr>
+    <tr><td><strong>agent-browser</strong></td><td>أداة متصفح من Vercel Labs تعتمد على Accessibility tree فقط (~200 توكين لكل صفحة).</td></tr>
+    <tr><td><strong>ANTHROPIC_BASE_URL</strong></td><td>متغير بيئة يوجه طلبات Claude Code من خوادم Anthropic إلى سيرفر SGLang المحلي.</td></tr>
+    <tr><td><strong>CUDA 13</strong></td><td>منصة NVIDIA للحوسبة المتوازية. مطلوب لتشغيل SGLang على H100 GPUs.</td></tr>
+    <tr><td><strong>Podman</strong></td><td>محرك حاويات بدون daemon (بديل Docker). يشغل SGLang على RHEL 10.</td></tr>
+    <tr><td><strong>settings.json</strong></td><td>ملف الإعدادات الدائمة لـ Claude Code في <code>~/.claude/settings.json</code>. يحتوي على متغيرات البيئة والصلاحيات.</td></tr>
+    <tr><td><strong>.mcp.json</strong></td><td>ملف تكوين MCP على مستوى المشروع. ضعه في جذر مشروعك لتسجيل أدوات المتصفح.</td></tr>
+    <tr><td><strong>--tool-call-parser</strong></td><td>علم SGLang لتفعيل استدعاء الأدوات (مطلوب من Claude Code لأدوات Bash, Edit, Read, إلخ).</td></tr>
+  </table>
 </section>
 
 <!-- INSTALLATION -->
@@ -1215,83 +1280,75 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
 
 <!-- AGENT-BROWSE -->
 <section class="section">
-  <h2>فحص أخطاء المتصفح (agent-browse MCP Server)</h2>
+  <h2>فحص أخطاء المتصفح (MCP Servers)</h2>
 
-  <p>Claude Code يمكنه الاتصال بمتصفحك عبر MCP server لقراءة console logs, network requests, أخطاء JavaScript, وهيكل الصفحة — كلها <strong>كنص</strong>, لا تحتاج رؤية. هذا الحل مثالي للتشغيل الأوفلاين حيث الموديل لا يدعم الصور.</p>
+  <p>Claude Code يمكنه الاتصال بمتصفحك عبر MCP servers لقراءة console logs, network requests, أخطاء JavaScript, وهيكل الصفحة — كلها <strong>كنص</strong>, لا تحتاج رؤية. هذا الحل مثالي للتشغيل الأوفلاين حيث الموديل لا يدعم الصور.</p>
 
-  <div class="info-box">
-    <strong>لماذا agent-browse الأفضل لموديل بدون رؤية؟</strong>
-    <p>جميع الأدوات الأساسية تعمل كنص: console logs (500 رسالة), network requests (500 طلب مع status codes), أخطاء JS مع stack traces (200 خطأ), Accessibility tree (هيكل الصفحة كنص). <strong>الموديل يقرأ كل شيء مباشرة بدون أي صور.</strong></p>
-  </div>
-
-  <h3>أدوات agent-browse</h3>
+  <h3>الموصى به: Playwright MCP (Microsoft)</h3>
+  <p>مخدم MCP الرسمي من Microsoft لأتمتة المتصفح مع فحص console و network:</p>
 
   <table>
     <tr><th>الأداة</th><th>الوصف</th><th>النوع</th><th>يحتاج رؤية؟</th></tr>
-    <tr><td><code>browser_console</code></td><td>يلتقط console.log, warnings, errors (آخر 500)</td><td>نص</td><td>لا</td></tr>
-    <tr><td><code>browser_requests</code></td><td>يلتقط network requests مع status codes (آخر 500)</td><td>JSON</td><td>لا</td></tr>
-    <tr><td><code>browser_errors</code></td><td>يلتقط أخطاء JS مع full stack traces (آخر 200)</td><td>نص</td><td>لا</td></tr>
-    <tr><td><code>browser_snapshot</code></td><td>يقرأ Accessibility tree — هيكل الصفحة للـ AI</td><td>نص</td><td>لا</td></tr>
-    <tr><td><code>browser_screenshot</code></td><td>تصوير الصفحة أو جزء منها</td><td>صورة</td><td>نعم (اختياري)</td></tr>
+    <tr><td><code>browser_console_messages</code></td><td>مخرجات console (log, warn, error, info, debug)</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_network_requests</code></td><td>طلبات network مع method, URL, status code, timing</td><td>JSON</td><td>لا</td></tr>
+    <tr><td><code>browser_snapshot</code></td><td>Accessibility tree — هيكل الصفحة كنص</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_navigate / click / type</code></td><td>تفاعل كامل مع الصفحة</td><td>—</td><td>لا</td></tr>
   </table>
 
-  <p>بما أن موديلك يقرأ نص فقط، Claude سيستخدم الأدوات النصية (<code>console</code>, <code>requests</code>, <code>errors</code>, <code>snapshot</code>) تلقائيا ولن يطلب screenshots.</p>
+  <h4>طريقة التركيب</h4>
+  <pre style="direction: ltr; text-align: left;">npx @playwright/mcp
+claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless</pre>
 
-  <h3>كيف يعمل</h3>
+  <h3>بديل: agent-browse (tollebrandon)</h3>
+  <p>التقاط مهيكل أكثر للأخطاء مع أدوات مخصصة:</p>
+
+  <table>
+    <tr><th>الأداة</th><th>الوصف</th><th>النوع</th><th>يحتاج رؤية؟</th></tr>
+    <tr><td><code>browser_console</code></td><td>console.log, warnings, errors (آخر 500)</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_requests</code></td><td>طلبات network مع status codes (آخر 500)</td><td>JSON</td><td>لا</td></tr>
+    <tr><td><code>browser_errors</code></td><td>أخطاء JS مع full stack traces (آخر 200)</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_snapshot</code></td><td>Accessibility tree — هيكل الصفحة للـ AI</td><td>نص</td><td>لا</td></tr>
+  </table>
+
+  <h4>طريقة التركيب</h4>
+  <pre style="direction: ltr; text-align: left;">git clone https://github.com/tollebrandon/agent-browse
+cd agent-browse && npm install && npm run build
+claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js</pre>
+
+  <h3>بديل: agent-browser (Vercel Labs)</h3>
+  <p>أداة متصفح تعتمد على Accessibility tree فقط (~200 توكين لكل صفحة, أقل 17x من screenshots). مثالية للفحص الخفيف:</p>
+  <pre style="direction: ltr; text-align: left;">npx agent-browser</pre>
+
+  <h3>كيف تعمل أدوات المتصفح</h3>
   <ol>
-    <li>يبدأ جلسة متصفح <strong>ثابتة</strong> (تستمر عبر أوامر متعددة)</li>
-    <li>يتنقل إلى الـ URL الذي تطلبه</li>
-    <li>يلتقط مخرجات console, network requests, والأخطاء في الوقت الحقيقي</li>
+    <li>تبدأ جلسة متصفح <strong>ثابتة</strong> (تستمر عبر أوامر متعددة)</li>
+    <li>تتنقل إلى الـ URL الذي تطلبه</li>
+    <li>تلتقط مخرجات console, network requests, والأخطاء في الوقت الحقيقي</li>
     <li>يمكنك الضغط على أزرار, ملء فورمات, كتابة نصوص — ثم فحص النتائج مرة أخرى</li>
   </ol>
 
-  <h3>طريقة التركيب</h3>
+  <p><strong>جميع مخدمات MCP تعمل أوفلاين بنفس الطريقة:</strong> تشتغل على جهازك المحلي, كل طلبات AI تذهب إلى SGLang عبر <code>ANTHROPIC_BASE_URL</code>.</p>
 
-  <h4>الخيار 1 — MCP Server (موصى به)</h4>
-  <pre style="direction: ltr; text-align: left;">git clone https://github.com/tollebrandon/agent-browse
-cd agent-browse
-npm install && npm run build
-claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js</pre>
-
-  <h4>الخيار 2 — ملف المشروع (.mcp.json)</h4>
-  <p>أنشئ ملف <code>.mcp.json</code> في جذر مشروعك:</p>
-  <pre style="direction: ltr; text-align: left;">{
-  "mcpServers": {
-    "agent-browse": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/absolute/path/to/agent-browse/dist/index.js"]
-    }
-  }
-}</pre>
-
-  <h3>أمثلة للاستخدام</h3>
-  <p>داخل جلسة Claude Code، اكتب:</p>
-  <ul>
-    <li><code>"افتح http://localhost:3000 وتأكد من وجود أخطاء في console"</code></li>
-    <li><code>"اذهب إلى التطبيق, التقط جميع network requests ذات status 4xx أو 5xx, وابلغني بها"</code></li>
-    <li><code>"افتح صفحة dashboard, اقرأ accessibility tree, ولخص هيكل الصفحة"</code></li>
-    <li><code>"افحص المتصفح لأخطاء JS مع stack traces واقترح إصلاحات"</code></li>
-  </ul>
-
-  <h3>مقارنة مع أدوات المتصفح الأخرى</h3>
+  <h3>مقارنة شاملة</h3>
   <table>
-    <tr><th>الميزة</th><th>agent-browse</th><th>Claude in Chrome</th><th>Playwright MCP</th></tr>
-    <tr><td>Console logs (مهيكلة)</td><td>500 رسالة</td><td>نعم</td><td>محدود</td></tr>
-    <tr><td>Network + status codes</td><td>500 طلب</td><td>بيانات فقط</td><td>لا</td></tr>
-    <tr><td>JS errors + stack traces</td><td>200 خطأ</td><td>جزئي</td><td>لا</td></tr>
-    <tr><td>Accessibility tree</td><td>نعم</td><td>نعم</td><td>نعم</td></tr>
-    <tr><td>جلسة ثابتة (Stateful)</td><td>نعم</td><td>نعم</td><td>نعم</td></tr>
-    <tr><td>وضع headless</td><td>نعم</td><td>لا</td><td>نعم</td></tr>
-    <tr><td>يعمل بدون رؤية</td><td><strong>نعم</strong></td><td>جزئي</td><td><strong>نعم</strong></td></tr>
-    <tr><td>100% أوفلاين</td><td><strong>نعم</strong></td><td>يحتاج إضافة</td><td><strong>نعم</strong></td></tr>
-    <tr><td>يحتاج إضافة Chrome</td><td>لا</td><td>نعم</td><td>لا</td></tr>
+    <tr><th>الميزة</th><th>Playwright MCP (Microsoft)</th><th>agent-browse</th><th>agent-browser (Vercel)</th><th>Claude in Chrome</th></tr>
+    <tr><td>Console logs</td><td>نعم</td><td>500 رسالة مهيكلة</td><td>لا</td><td>نعم</td></tr>
+    <tr><td>Network + status codes</td><td>نعم</td><td>500 طلب</td><td>لا</td><td>بيانات فقط</td></tr>
+    <tr><td>JS errors + stack traces</td><td>جزئي</td><td>200 خطأ</td><td>لا</td><td>جزئي</td></tr>
+    <tr><td>Accessibility tree</td><td>نعم</td><td>نعم</td><td>نعم (~200 توكين)</td><td>نعم</td></tr>
+    <tr><td>جلسة ثابتة</td><td>نعم</td><td>نعم</td><td>نعم</td><td>نعم</td></tr>
+    <tr><td>Headless mode</td><td>نعم</td><td>نعم</td><td>نعم</td><td>لا</td></tr>
+    <tr><td>يعمل بدون رؤية</td><td><strong>نعم</strong></td><td><strong>نعم</strong></td><td><strong>نعم</strong></td><td>جزئي</td></tr>
+    <tr><td>100% أوفلاين</td><td><strong>نعم</strong></td><td><strong>نعم</strong></td><td><strong>نعم</strong></td><td>يحتاج إضافة</td></tr>
+    <tr><td>يحتاج إضافة Chrome</td><td>لا</td><td>لا</td><td>لا</td><td>نعم</td></tr>
+    <tr><td>صيانة ونشاط</td><td><strong>Microsoft (مستمر)</strong></td><td>قليل</td><td><strong>Vercel (مستمر)</strong></td><td>Anthropic</td></tr>
   </table>
 
   <div class="note">
-    <strong>خلاصة:</strong> agent-browse هو الحل الأقوى لفحص الأخطاء في المتصفح مع موديل بدون رؤية. console + network + errors + DOM structure — كلها كنص, كلها تشتغل مع DeepSeek V4 Flash و SGLang أوفلاين 100%.
+    <strong>الخلاصة:</strong> أفضل تركيبة لموديل بدون رؤية: <strong>Playwright MCP (Microsoft)</strong> للفحص العام + <strong>agent-browser (Vercel)</strong> للفحص الخفيف السريع. كلها كنص, كلها تشتغل مع DeepSeek V4 Flash و SGLang أوفلاين 100%.
   </div>
 </section>
+
 
 <!-- CLAUDE.MD -->
 <section class="section">
@@ -1438,7 +1495,7 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
       <li>WebSearch - البحث في الويب</li>
       <li>إضافات MCP السحابية (GitHub, GitLab, Linear, Discord) - تحتاج اتصالا بخدماتها</li>
     </ul>
-    <p><strong>MCP المحلي</strong> (مثل agent-browse لفحص المتصفح) يعمل 100% أوفلاين لأنه يشتغل على جهازك ويتواصل مع سيرفر SGLang المحلي.</p>
+    <p><strong>MCP المحلي</strong> (مثل Playwright MCP, agent-browser, agent-browse) يعمل 100% أوفلاين لأنه يشتغل على جهازك ويتواصل مع سيرفر SGLang المحلي.</p>
     <p>هذه الميزات ليست ضرورية لعمل Claude Code كمحرر كود ذكي.</p>
   </div>
 </section>

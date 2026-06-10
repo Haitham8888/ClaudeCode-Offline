@@ -27,22 +27,61 @@ Client Machine                          SGLang Server (RHEL / Podman)
   No Internet    No Login    No Telemetry
 ```
 
-## Requirements
+## Full Stack Requirements
 
-### Windows
-- Windows 10 (1903+) or Windows 11
-- Git for Windows ([git-scm.com](https://git-scm.com))
-- Network access to the SGLang server on port 30000
+### A. SERVER -- Already Running (RHEL 10 + SGLang + DeepSeek V4 Flash)
 
-### Linux (RHEL / Fedora / CentOS / Rocky Linux)
-- RHEL 8+ or equivalent
-- Git: `sudo dnf install git`
-- Network access to the SGLang server on port 30000
+The server is already set up and does NOT need any changes:
+- **Hardware:** 4x H100 94GB GPUs
+- **OS:** RHEL 10 with Podman + CUDA 13
+- **SGLang:** Running with `/v1/messages` endpoint on port 30000
+- **Model:** DeepSeek V4 Flash loaded with `--tool-call-parser deepseekv3`
+- **IP:** Accessible at `http://TBD:30000` on the local network
 
-### SGLang Server (RHEL 10 with Podman)
-- DeepSeek V4 Flash running in a Podman container
-- Port 30000 exposed on the local network
-- `/v1/messages` endpoint enabled (SGLang PR #18630)
+No server-side installation is required. This package only configures the client side.
+
+### B. CLIENT (Windows 10/11 or Linux)
+
+#### Required (must install)
+
+| Software | Version | Windows | Linux | Purpose |
+|----------|---------|---------|-------|---------|
+| **Claude Code CLI** | v2.1.170 | `windows/claude.exe` | `linux/claude` | The AI coding agent |
+| **Git** | Any recent | `winget install Git.Git` | `sudo dnf install git` | Required by Claude Code |
+| **Node.js** | 18+ | `winget install OpenJS.NodeJS` | `sudo dnf install nodejs` | Required by MCP servers |
+
+#### Optional but Recommended
+
+| Software | Purpose | Install Command (Windows) | Install Command (Linux) |
+|----------|---------|--------------------------|------------------------|
+| **VS Code** | Code editor with Claude Code integration | `winget install Microsoft.VisualStudioCode` | `sudo rpm --import ...` |
+| **Playwright MCP** (Microsoft) | Browser error/console/network review | `npx @playwright/mcp` | `npx @playwright/mcp` |
+| **agent-browser** (Vercel Labs) | Text-first browser page inspection | `npx agent-browser` | `npx agent-browser` |
+| **Chrome / Edge** | Optional headed browser testing | `winget install Google.Chrome` | via dnf/flatpak |
+
+#### Network Requirements
+
+| Direction | Port | Protocol | Purpose |
+|-----------|------|----------|---------|
+| Client → SGLang Server | 30000 | HTTP (TCP) | AI inference requests |
+| Client → localhost | Any | stdio/WebSocket | MCP server communication |
+| Client → Internet | -- | -- | NOT REQUIRED after initial setup |
+
+### C. Software Definitions / Concepts
+
+| Term | Definition |
+|------|-----------|
+| **Claude Code CLI** | Anthropic's terminal-based AI coding agent. Executes tasks via natural language. |
+| **SGLang** | High-performance LLM serving framework. Runs DeepSeek V4 Flash with CUDA 13 batching. |
+| **MCP (Model Context Protocol)** | Open protocol for connecting AI agents to external tools (browsers, databases, APIs). |
+| **Playwright MCP** | Microsoft's official MCP server for browser automation. Captures console, network, and page structure. |
+| **agent-browser** | Vercel Labs' text-first browser tool. Reads pages via accessibility tree (~200 tokens per page). |
+| **ANTHROPIC_BASE_URL** | Environment variable that redirects Claude Code's API calls from Anthropic cloud to your local SGLang. |
+| **CUDA 13** | NVIDIA's parallel computing platform. Required for SGLang on H100 GPUs. |
+| **Podman** | Daemonless container engine (alternative to Docker). Runs SGLang on RHEL 10. |
+| **settings.json** | Claude Code's persistent configuration file at `~/.claude/settings.json`. Holds env vars and permissions. |
+| **.mcp.json** | Project-level MCP server configuration. Place in your project root to register browser tools. |
+| **--tool-call-parser** | SGLang flag enabling tool/function calling (required by Claude Code for Bash, Edit, Read, etc.). |
 
 ## Package Structure
 
@@ -438,11 +477,34 @@ claude --model DeepSeek-V4-Flash
 ### 5. Agents Test
 Inside a Claude Code session, type `/agents` to list available agents.
 
-## Browser Error Review (agent-browse MCP Server)
+## Browser Error Review (MCP Servers)
 
-Claude Code can connect to your browser via an MCP server to read console logs, network requests, JavaScript errors, and page structure -- all as **text**, no vision required. This is ideal for offline setups where the model does not support screenshots.
+Claude Code can connect to your browser via MCP servers to read console logs, network requests, JavaScript errors, and page structure -- all as **text**, no vision required. This is ideal for offline setups where the model does not support screenshots.
 
-### Why agent-browse?
+### Recommended: Playwright MCP (Microsoft)
+
+The official Playwright MCP server from Microsoft provides browser automation with console and network inspection:
+
+| Tool | What it captures | Format | Vision needed? |
+|------|-----------------|--------|:--------------:|
+| `browser_console_messages` | Console output (log, warn, error, info, debug) | Text | No |
+| `browser_network_requests` | Network requests with method, URL, status code, timing | JSON | No |
+| `browser_snapshot` | Accessibility tree (page structure for AI) | Text | No |
+| `browser_take_screenshot` | Page screenshot | PNG | Yes (optional) |
+| `browser_navigate` / `browser_click` / `browser_type` | Full page interaction | -- | No |
+
+**Installation:**
+```bash
+npx @playwright/mcp
+```
+Then register with Claude Code:
+```bash
+claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless
+```
+
+### Alternative: agent-browse (tollebrandon)
+
+Provides more structured error capture with dedicated tools:
 
 | Tool | What it captures | Format | Vision needed? |
 |------|-----------------|--------|:--------------:|
@@ -450,85 +512,67 @@ Claude Code can connect to your browser via an MCP server to read console logs, 
 | `browser_requests` | Network requests with status codes (last 500) | JSON | No |
 | `browser_errors` | JS errors with full stack traces (last 200) | Text | No |
 | `browser_snapshot` | Accessibility tree (page structure for AI) | Text | No |
-| `browser_screenshot` | Full page or viewport screenshot | PNG | Yes (optional) |
 
-Since your model reads text only, Claude will use the text-based tools (`console`, `requests`, `errors`, `snapshot`) automatically and never request screenshots.
+**Installation:**
+```bash
+git clone https://github.com/tollebrandon/agent-browse
+cd agent-browse && npm install && npm run build
+claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js
+```
 
-### How it works
+### Alternative: agent-browser (Vercel Labs)
+
+A text-first browser tool using accessibility tree only (~200-300 tokens per page, 17x reduction vs screenshots). Ideal for lightweight page structure inspection:
+```bash
+npx agent-browser
+```
+
+### How browser MCP works
 
 1. Starts a **stateful browser session** (persists across tool calls)
 2. Navigates to your target URL
 3. Captures console output, network requests, and errors in real time
 4. You can click, fill forms, type, and interact -- then check results again
 
-### Installation
-
-**Option 1 -- MCP Server (recommended):**
-
-```bash
-git clone https://github.com/tollebrandon/agent-browse
-cd agent-browse
-npm install && npm run build
-claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js
-```
-
-**Option 2 -- Project-level `.mcp.json`:**
-
-Create `.mcp.json` in your project root:
-
-```json
-{
-  "mcpServers": {
-    "agent-browse": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/absolute/path/to/agent-browse/dist/index.js"]
-    }
-  }
-}
-```
-
-**Option 3 -- Global settings:**
-
-Add the same block to `~/.claude/settings.json` under `"mcpServers"`.
-
-### Usage Examples
-
-Inside a Claude Code session:
-
-> `"Open http://localhost:3000 and check the console for errors"`
->
-> `"Navigate to my app, capture all network requests with status 4xx or 5xx, and report them"`
->
-> `"Open the dashboard page, read the accessibility tree, and summarize the page structure"`
->
-> `"Check the browser for JS errors with stack traces and suggest fixes"`
+All MCP servers work identically offline: local machine execution, all AI inference routed to SGLang via `ANTHROPIC_BASE_URL`.
 
 ### Offline Compatibility
 
 All communication stays local:
-- The MCP server runs on your machine -- no external API calls
+- MCP servers run on your machine -- no external API calls
 - Claude Code routes all AI inference to your local SGLang server via `ANTHROPIC_BASE_URL`
-- The browser session is entirely local (`127.0.0.1`)
+- Browser sessions are entirely local (`127.0.0.1`)
 - **100% offline after initial installation**
 
-### Comparison with other browser tools
+### Comparison
 
-| Feature | agent-browse | Claude in Chrome | Playwright MCP |
-|---------|:------------:|:-----------------:|:--------------:|
-| Console logs (structured) | 500 messages | Yes | Limited |
-| Network requests + status codes | 500 requests | Metadata only | No |
-| JS errors + stack traces | 200 errors | Partial | No |
-| Accessibility tree | Yes | Yes | Yes |
-| Stateful session | Yes | Yes | Yes |
-| Headless mode | Yes | No | Yes |
-| Works without vision | **Yes** | Partial | **Yes** |
-| 100% offline | **Yes** | Requires extension | **Yes** |
-| Chrome extension needed | No | Yes | No |
+| Feature | Playwright MCP (Microsoft) | agent-browse | agent-browser (Vercel) | Claude in Chrome |
+|---------|:-:|:-:|:-:|:-:|
+| Console logs | Yes | 500 structured messages | No | Yes |
+| Network requests + status codes | Yes | 500 requests | No | Metadata only |
+| JS errors + stack traces | Partial | 200 errors | No | Partial |
+| Accessibility tree | Yes | Yes | Yes (~200 tok) | Yes |
+| Stateful session | Yes | Yes | Yes | Yes |
+| Headless mode | Yes | Yes | Yes | No |
+| Works without vision | **Yes** | **Yes** | **Yes** | Partial |
+| 100% offline | **Yes** | **Yes** | **Yes** | Requires extension |
+| Chrome extension needed | No | No | No | Yes |
+| Actively maintained | **Yes (Microsoft)** | Low | **Yes (Vercel)** | Yes (Anthropic) |
 
-## SGLang Server Setup
+## SGLang Server Status
 
-Start DeepSeek V4 Flash on RHEL with Podman:
+The SGLang server is **already running** on your RHEL 10 machine. No setup is needed.
+
+**Current Specifications:**
+- **SGLang:** v0.5.12.post1 (latest stable with CUDA 13 + Torch 2.11)
+- **Model:** DeepSeek V4 Flash with `--tool-call-parser deepseekv3`
+- **Endpoint:** `http://TBD:30000/v1/messages`
+- **GPU:** 4x H100 94GB with Tensor Parallelism (tp=4)
+- **Container:** Podman with `lmsysorg/sglang:latest-cu130-runtime`
+
+> If you need to restart the server for any reason, use the command below.
+> This is reference only -- your server is already running.
+> Use `lmsysorg/sglang:v0.5.12.post1-cu130-runtime` for a pinned stable version.
 
 ```bash
 podman run --gpus all \
@@ -536,8 +580,14 @@ podman run --gpus all \
   -p 30000:30000 \
   -v /path/to/models:/models:Z \
   --ipc=host \
-  lmsysorg/sglang:latest \
+  lmsysorg/sglang:latest-cu130-runtime \
   python3 -m sglang.launch_server \
+    --model-path /models/DeepSeek-V4-Flash \
+    --tp 4 \
+    --host 0.0.0.0 \
+    --port 30000 \
+    --tool-call-parser deepseekv3
+```
     --model-path /models/DeepSeek-V4-Flash \
     --tp 4 \
     --host 0.0.0.0 \
@@ -585,7 +635,7 @@ curl -X POST http://TBD:30000/v1/messages \
 - Project commands (`/cd`, `/add-dir`, `/diff`, `/init`)
 - Agent management (`/agents`, `/fork`)
 - Configuration (`/config`, `/color`, `/doctor`, `/help`, `/release-notes`)
-- **Local MCP servers** (agent-browse, Playwright MCP, and any MCP server running on localhost)
+- **Local MCP servers** (Playwright MCP, agent-browser, agent-browse, and any MCP server running on localhost)
 
 ## What Does Not Work Offline
 
@@ -593,7 +643,7 @@ curl -X POST http://TBD:30000/v1/messages \
 - **WebSearch** -- Web search (requires internet)
 - **Cloud-based MCP integrations** -- GitHub, GitLab, Linear, Discord (require connectivity to their services)
 
-**Local MCP servers** (like agent-browse for browser debugging) work 100% offline since they run on your machine and communicate with your local SGLang server.
+**Local MCP servers** (Playwright MCP, agent-browser, agent-browse) work 100% offline since they run on your machine and communicate with your local SGLang server.
 
 ## License
 

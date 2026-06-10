@@ -100,11 +100,13 @@ echo.
 echo  4. Launch Claude Code:
 echo     claude --model DeepSeek-V4-Flash --bare
 echo.
-echo  5. OPTIONAL - Install browser error review tool:
-echo     git clone https://github.com/tollebrandon/agent-browse
-echo     cd agent-browse
-echo     npm install && npm run build
-echo     claude mcp add --transport stdio agent-browse -- node "%CD%\agent-browse\dist\index.js"
+echo  5. OPTIONAL - Install browser error review tools:
+echo     Playwright MCP (Microsoft - RECOMMENDED):
+echo       npx @playwright/mcp
+echo       claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless
+echo.
+echo     agent-browser (Vercel Labs - text-first):
+echo       npx agent-browser
 echo.
 echo  NOTE: Update the IP address in settings.json
 echo        to match your SGLang server address.
