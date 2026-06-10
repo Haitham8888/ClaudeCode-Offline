@@ -138,7 +138,29 @@
     text-align: left;
     margin: 16px 0;
     overflow-x: auto;
+    position: relative;
   }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--card2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    font-size: 0.75em;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: inherit;
+    opacity: 0;
+    transition: opacity 0.2s;
+    direction: ltr;
+  }
+
+  pre:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { background: var(--border-light); color: var(--text); }
+  .copy-btn.copied { background: var(--success-bg); color: var(--success); border-color: var(--success); }
 
   pre .comment { color: #6b7280; }
   pre .cmd { color: #22d3ee; }
@@ -341,7 +363,7 @@
 <!-- HEADER -->
 <header>
   <h1>Claude Code <span>Offline</span></h1>
-  <div class="subtitle">تشغيل Claude Code بدون إنترنت وبدون حساب عبر SGLang + DeepSeek V4 Flash</div>
+  <div class="subtitle">تشغيل Claude Code بدون اتصال بالإنترنت وبدون حساب عبر SGLang + DeepSeek V4 Flash</div>
   <div class="badge-row">
     <span class="badge badge-primary">Offline</span>
     <span class="badge badge-success">v2.1.170</span>
@@ -354,7 +376,7 @@
 <section class="section">
   <h2>بدء سريع</h2>
 
-  <p>لتشغيل Claude Code أوفلاين بالكامل، تحتاج فقط ثلاثة متغيرات بيئية وسيرفر SGLang يعمل على المنفذ 30000:</p>
+  <p>لتشغيل Claude Code بدون إنترنت بالكامل، تحتاج فقط ثلاثة متغيرات بيئية وخادم SGLang يعمل على المنفذ 30000:</p>
 
   <div class="os-tabs">
     <button class="os-tab active" onclick="switchOS('win')">Windows (CMD)</button>
@@ -422,17 +444,94 @@ ClaudeCode-Offline-Package/
 <section class="section">
   <h2>المتطلبات الكاملة</h2>
 
-  <h3>A. السيرفر — شغال وجاهز (RHEL 10 + SGLang + DeepSeek V4 Flash)</h3>
-  <p>السيرفر شغال مسبقا ولا يحتاج أي تغيير:</p>
+  <h3>A. الخادم — قيد التشغيل وجاهز (RHEL 10 + SGLang + DeepSeek V4 Flash)</h3>
+  <p>الخادم يعمل مسبقًا ولا يحتاج أي تغيير:</p>
   <ul>
-    <li><strong>المعالج:</strong> 4x H100 94GB GPUs</li>
+    <li><strong>المعالجات الرسومية:</strong> 4x H100 94GB</li>
     <li><strong>النظام:</strong> RHEL 10 مع Podman + CUDA 13</li>
-    <li><strong>SGLang:</strong> شغال على <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.12"><code>v0.5.12.post1</code></a> مع CUDA 13 + Torch 2.11 + <code>/v1/messages</code> endpoint على منفذ 30000</li>
-    <li><strong>الموديل:</strong> DeepSeek V4 Flash محمّل مع <code>--tool-call-parser deepseekv3</code></li>
-    <li><strong>IP:</strong> متاح على <code>http://TBD:30000</code> على الشبكة المحلية</li>
+    <li><strong>SGLang:</strong> يعمل على <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.12"><code>v0.5.12.post1</code></a> مع CUDA 13 + Torch 2.11 ونقطة النهاية <code>/v1/messages</code> على المنفذ 30000</li>
+    <li><strong>النموذج:</strong> DeepSeek V4 Flash محمّل مع <code>--tool-call-parser deepseekv3</code></li>
+    <li><strong>العنوان:</strong> متاح على <code>http://TBD:30000</code> على الشبكة المحلية</li>
   </ul>
   <div class="note">
-    <strong>السيرفر جاهز بالكامل.</strong> هذه الحزمة تخص الجهاز العميل فقط. لا تحتاج تثبيت SGLang أو تحميل الموديل — كل شيء موجود.
+    <strong>الخادم جاهز بالكامل.</strong> هذه الحزمة تخص الجهاز العميل فقط. لا تحتاج إلى تثبيت SGLang أو تحميل النموذج — كل شيء موجود.
+  </div>
+
+  <h4>أنواع بطاقات الشاشة المتوافقة</h4>
+  <p>الإعداد الحالي يستخدم <strong>4x H100 94GB</strong>، لكن SGLang يدعم عدة أنواع من البطاقات. جودة الدعم تختلف حسب الشركة المصنعة:</p>
+
+  <table>
+    <tr><th>البطاقة</th><th>الذاكرة (VRAM)</th><th>دعم SGLang</th><th>ملاحظات</th></tr>
+    <tr>
+      <td><strong>NVIDIA H100</strong></td><td>94 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>الإعداد الحالي. أفضل أداء، TP يصل إلى 8</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA H200</strong></td><td>141 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>ترقية مباشرة من H100، ذاكرة HBM3e أسرع</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA A100</strong></td><td>40/80 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>الجيل السابق، ممتاز لـ DeepSeek V4 Flash</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA A6000</strong></td><td>48 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>خيار ممتاز لبطاقة واحدة مع نماذج مضغوطة (Q4)</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA A5000</strong></td><td>24 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>مناسب لمحطات العمل، يحتاج ضغط (quantization)</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA L40S</strong></td><td>48 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>Ada Lovelace، أداء استدلال قوي</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA RTX 5090</strong></td><td>32 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>أحدث جيل Blackwell، ذاكرة GDDR7، يعمل مع CUDA 13</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA RTX 5080</strong></td><td>24 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>جيل Blackwell، GDDR7، أداء ممتاز مقابل السعر</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA RTX 5070</strong></td><td>16 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>جيل Blackwell، مناسب للنماذج المضغوطة</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA RTX 4090</strong></td><td>24 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>بطاقة استهلاكية، تعمل مع CUDA 12.x</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA RTX 6000 Ada</strong></td><td>48 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>الجيل الاحترافي من Ada</td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA V100</strong></td><td>16/32 GB</td><td>🟢 كامل (CUDA)</td>
+      <td>قديم لكن مدعوم</td>
+    </tr>
+    <tr>
+      <td><strong>AMD MI250</strong></td><td>128 GB</td><td>🟡 تجريبي (ROCm)</td>
+      <td>يحتاج ROCm 6+، اختبار محدود</td>
+    </tr>
+    <tr>
+      <td><strong>AMD MI300X</strong></td><td>192 GB</td><td>🟡 تجريبي (ROCm)</td>
+      <td>أكبر ذاكرة متاحة، منصة ROCm في تطور</td>
+    </tr>
+    <tr>
+      <td><strong>Apple M1/M2/M3/M4 Ultra</strong></td><td>مشتركة (64-192 GB)</td><td>🟡 جزئي (MLX)</td>
+      <td>MLX backend تجريبي، سعة معالجة محدودة</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>نصائح لاختيار البطاقة:</strong>
+    <ul>
+      <li><strong>CUDA (NVIDIA)</strong> هو الأكثر نضجًا والموصى به — كل شيء يعمل دون مشاكل.</li>
+      <li><strong>Tensor Parallelism (TP)</strong> يوزع النموذج على عدة بطاقات. مع 4x H100 شغّل TP=4 لأقصى سرعة.</li>
+      <li><strong>الضغط (Quantization):</strong> DeepSeek V4 Flash بحجم FP16 يحتاج ~150 GB. بضغط 4-bit (AWQ/GPTQ) ينزل إلى 40-50 GB. أصحاب البطاقة الواحدة يحتاجون نماذج مضغوطة.</li>
+      <li><strong>الـ VRAM يحدد طول السياق:</strong> ذاكرة أكبر = سياق أطول. H100 سعة 94 GB تتعامل مع 128K+ بسلاسة.</li>
+    </ul>
   </div>
 
   <h3>B. الجهاز العميل (Client — Windows / Linux)</h3>
@@ -500,7 +599,7 @@ ClaudeCode-Offline-Package/
 
   <table>
     <tr><th>المصطلح</th><th>التعريف</th></tr>
-    <tr><td><strong>Claude Code CLI</strong></td><td>وكيل البرمجة الذكي من Anthropic يعمل في التيرمينال. ينفذ المهام عبر اللغة الطبيعية.</td></tr>
+    <tr><td><strong>Claude Code CLI</strong></td>      <td>وكيل البرمجة الذكي من Anthropic يعمل في الطرفية. ينفذ المهام عبر اللغة الطبيعية.</td></tr>
     <tr><td><strong>SGLang</strong></td><td>إطار عالي الأداء لتشغيل نماذج LLM. يشغل DeepSeek V4 Flash مع CUDA 13 batching على 4x H100.</td></tr>
     <tr><td><strong>MCP (Model Context Protocol)</strong></td><td>بروتوكول مفتوح لتوصيل وكلاء AI بأدوات خارجية (متصفحات, قواعد بيانات, APIs).</td></tr>
     <tr><td><strong>Playwright MCP</strong></td><td>مخدم MCP الرسمي من Microsoft لأتمتة المتصفح. يلتقط console, network, وهيكل الصفحة.</td></tr>
@@ -510,7 +609,7 @@ ClaudeCode-Offline-Package/
     <tr><td><strong>Podman</strong></td><td>محرك حاويات بدون daemon (بديل Docker). يشغل SGLang على RHEL 10.</td></tr>
     <tr><td><strong>settings.json</strong></td><td>ملف الإعدادات الدائمة لـ Claude Code في <code>~/.claude/settings.json</code>. يحتوي على متغيرات البيئة والصلاحيات.</td></tr>
     <tr><td><strong>.mcp.json</strong></td><td>ملف تكوين MCP على مستوى المشروع. ضعه في جذر مشروعك لتسجيل أدوات المتصفح.</td></tr>
-    <tr><td><strong>--tool-call-parser</strong></td><td>علم SGLang لتفعيل استدعاء الأدوات (مطلوب من Claude Code لأدوات Bash, Edit, Read, إلخ).</td></tr>
+    <tr><td><strong>--tool-call-parser</strong></td><td>وسم SGLang لتفعيل استدعاء الأدوات (مطلوب من Claude Code لأدوات Bash, Edit, Read، وغيرها).</td></tr>
   </table>
 </section>
 
@@ -537,7 +636,7 @@ ClaudeCode-Offline-Package/
       <div class="step-num">2</div>
       <div class="step-content">
         <p><strong>تثبيت Claude Code</strong></p>
-        <p>شغل المثبت الأوفلاين كمسؤول (Administrator):</p>
+        <p>شغّل المثبت بدون إنترنت بصلاحية المسؤول (Administrator):</p>
         <pre>.\windows\install-offline.bat</pre>
         <p>أو التثبيت اليدوي:</p>
         <pre><span class="cmd">mkdir</span> -Force <span class="str">"$env:USERPROFILE\.local\bin"</span>
@@ -738,10 +837,10 @@ ClaudeCode-Offline-Package/
 <!-- VERIFICATION -->
 <section class="section">
   <h2>التحقق من صحة العمل</h2>
-  <p>لتتأكد أن Claude Code يعمل بشكل صحيح مع سيرفر SGLang المحلي، اتبع هذه الخطوات:</p>
+  <p>لتتأكد من أن Claude Code يعمل بشكل صحيح مع خادم SGLang المحلي، اتبع هذه الخطوات:</p>
 
-  <h3>1. التحقق من اتصال السيرفر</h3>
-  <p>تأكد أن سيرفر SGLang يستجيب:</p>
+  <h3>1. التحقق من اتصال الخادم</h3>
+  <p>تأكد من أن خادم SGLang يستجيب:</p>
 
   <pre><span class="comment"># اختبار قائمة الموديلات</span>
 curl http://TBD:30000/v1/models
@@ -855,7 +954,7 @@ claude --model DeepSeek-V4-Flash</pre>
     <tr class="table-group"><td colspan="3">الوكلاء (Agents)</td></tr>
     <tr>
       <td><code>/agents</code></td>
-      <td><strong>إدارة تكوينات الوكلاء (sub-agents).</strong> يفتح مدير الوكلاء لإنشاء وحذف وعرض وتشغيل وكلاء متخصصين. الوكلاء هم جلسات Claude Code مستقلة يمكنها التفويض بمهام جانبية (مثل مراجعة الكود أو كتابة الاختبارات). يمكن لكل وكيل أن يكون له شخصيته الخاصة وتعليماته المخصصة. جميع الوكلاء يستخدمون نفس API السيرفر المحلي.</td>
+      <td><strong>إدارة تكوينات الوكلاء (sub-agents).</strong> يفتح مدير الوكلاء لإنشاء وحذف وعرض وتشغيل وكلاء متخصصين. الوكلاء هم جلسات Claude Code مستقلة يمكنها تفويض مهام جانبية (مثل مراجعة الكود أو كتابة الاختبارات). يمكن لكل وكيل أن تكون له شخصيته الخاصة وتعليماته المخصصة. جميع الوكلاء يستخدمون API الخادم المحلي نفسه.</td>
       <td>محلي + API</td>
     </tr>
 
@@ -991,9 +1090,9 @@ claude --model DeepSeek-V4-Flash</pre>
 
   <h3>آلية العمل</h3>
   <ol>
-    <li><strong>Claude Code</strong> يرسل طلب POST إلى /v1/messages على سيرفر SGLang المحلي</li>
+    <li><strong>Claude Code</strong> يرسل طلب POST إلى /v1/messages على خادم SGLang المحلي</li>
     <li><strong>SGLang</strong> يستقبل الطلب بصيغة Anthropic Messages API ويترجمه إلى صيغته الداخلية</li>
-    <li><strong>DeepSeek V4 Flash</strong> يعالج الطلب ويولد الرد</li>
+    <li><strong>DeepSeek V4 Flash</strong> يعالج الطلب ويولّد الرد</li>
     <li><strong>SGLang</strong> يرد على Claude Code بنفس صيغة Anthropic API</li>
     <li><strong>Claude Code</strong> يستخدم الأدوات المضمنة (Bash, Edit, Read...) لتنفيذ المهام على جهازك</li>
   </ol>
@@ -1003,7 +1102,7 @@ claude --model DeepSeek-V4-Flash</pre>
     <tr><th>المكون</th><th>الدور في تجاوز تسجيل الدخول</th></tr>
     <tr>
       <td><code>ANTHROPIC_BASE_URL</code></td>
-      <td>يغير وجهة API من api.anthropic.com إلى سيرفرك المحلي. كل طلب POST يذهب إلى سيرفرك بدلا من خوادم Anthropic.</td>
+      <td>يغير وجهة API من api.anthropic.com إلى خادمك المحلي. كل طلب POST يذهب إلى خادمك بدلاً من خوادم Anthropic.</td>
     </tr>
     <tr>
       <td><code>ANTHROPIC_API_KEY</code></td>
@@ -1018,7 +1117,7 @@ claude --model DeepSeek-V4-Flash</pre>
 
 <!-- SGLANG SETUP -->
 <section class="section">
-  <h2>إعداد سيرفر SGLang</h2>
+  <h2>إعداد خادم SGLang</h2>
 
   <h3>تشغيل DeepSeek V4 Flash على RHEL مع Podman</h3>
 
@@ -1079,12 +1178,12 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   </div>
 
   <div class="warning-box">
-    <strong>connect ECONNREFUSED (لا يمكن الاتصال بالسيرفر)</strong>
-    <p>سيرفر SGLang غير شغال أو IP/port غير صحيح. تحقق من:</p>
+    <strong>connect ECONNREFUSED (لا يمكن الاتصال بالخادم)</strong>
+    <p>خادم SGLang لا يعمل أو IP/port غير صحيح. تحقق من:</p>
     <ul>
-      <li>أن السيرفر شغال: <code>curl http://[IP]:30000/v1/models</code></li>
+      <li>أن الخادم يعمل: <code>curl http://[IP]:30000/v1/models</code></li>
       <li>صحة IP في ANTHROPIC_BASE_URL</li>
-      <li>الـ firewall يسمح بالاتصال على المنفذ 30000</li>
+      <li>جدار الحماية (firewall) يسمح بالاتصال على المنفذ 30000</li>
     </ul>
   </div>
 
@@ -1092,7 +1191,7 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
     <strong>Claude Code يطلب تسجيل دخول (login)</strong>
     <p>تأكد من:</p>
     <ul>
-      <li>وجود <code>ANTHROPIC_BASE_URL</code> وتشير إلى سيرفرك المحلي</li>
+      <li>وجود <code>ANTHROPIC_BASE_URL</code> وتشير إلى خادمك المحلي</li>
       <li>وجود <code>ANTHROPIC_API_KEY</code> بقيمة وهمية</li>
       <li>وجود <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code></li>
     </ul>
@@ -1103,7 +1202,7 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
     <strong>النافذة تفتح وتقفل بسرعة (على Windows)</strong>
     <p>سيرفر SGLang غير متاح، لذا Claude Code يخرج مباشرة. حلول:</p>
     <ul>
-      <li>تأكد أن السيرفر شغال قبل تشغيل Claude Code</li>
+      <li>تأكد أن الخادم يعمل قبل تشغيل Claude Code</li>
       <li>استخدم <code>claude --bare -p "..."</code> بدلا من الوضع التفاعلي</li>
       <li>أو استخدم CMD بدلا من النقر المزدوج على ملف</li>
     </ul>
@@ -1335,8 +1434,8 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
   <h4>فحص أخطاء Console</h4>
   <ul>
     <li><code>"افتح http://localhost:3000 وتأكد من وجود أخطاء في browser console"</code></li>
-    <li><code>"اذهب إلى dashboard واقرأ مخرجات console, دور على warnings و errors"</code></li>
-    <li><code>"روح لـ localhost:3000, أرني جميع رسائل console مصنفة حسب النوع error"</code></li>
+    <li><code>"اذهب إلى dashboard واقرأ مخرجات console, ابحث عن warnings و errors"</code></li>
+    <li><code>"انتقل إلى localhost:3000, أرني جميع رسائل console مصنفة حسب النوع error"</code></li>
   </ul>
 
   <h4>فحص طلبات Network</h4>
@@ -1350,7 +1449,7 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
   <ul>
     <li><code>"افتح localhost:3000 واقرأ accessibility tree, لخص تخطيط الصفحة"</code></li>
     <li><code>"اذهب إلى صفحة settings ووصف جميع العناصر التفاعلية"</code></li>
-    <li><code>"روح للـ dashboard ولقيني كل الأزرار والروابط وحقول النموذج"</code></li>
+    <li><code>"انتقل إلى dashboard واعرض لي كل الأزرار والروابط وحقول النموذج"</code></li>
   </ul>
 
   <h4>سير عمل كامل للتصحيح</h4>
@@ -1405,7 +1504,7 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
 
   <h3>كيف يعمل</h3>
   <ul>
-    <li>ضع <code>CLAUDE.md</code> في جذر مشروعك (بجانب package.json, Cargo.toml, go.mod إلخ).</li>
+    <li>ضع <code>CLAUDE.md</code> في جذر مشروعك (بجانب package.json, Cargo.toml, go.mod وغيرها).</li>
     <li>Claude Code يقرأه تلقائيا عند بدء جلسة في ذلك المجلد.</li>
     <li>محتوى الملف يحقن في system prompt، لذا Claude يتبعه طوال الجلسة.</li>
     <li>يستمر عبر /clear (الجلسات الجديدة في نفس المشروع تقرأه مجددا).</li>
@@ -1450,9 +1549,9 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
 
   <h3>نصائح لأفضل CLAUDE.md</h3>
   <ul>
-    <li><strong>كن محددا، لا عام.</strong> بدل "اكتب كود نظيف"، قل "استخدم early returns، أقصى 80 حرفا لكل سطر، PascalCase للـ types".</li>
+    <li><strong>كن محددا، لا عام.</strong> بدلاً من "اكتب كود نظيف"، قل "استخدم early returns، أقصى 80 حرفا لكل سطر، PascalCase للـ types".</li>
     <li><strong>أضف الأوامر الدقيقة.</strong> <code>npm run test</code>، <code>cargo build --release</code>، <code>python -m pytest tests/</code> — حتى يتمكن Claude من تشغيلها.</li>
-    <li><strong>خليها موجزة.</strong> 50-150 سطرا مثالياً. الكثير من السياق يشتت التركيز.</li>
+    <li><strong>اجعله موجزًا.</strong> 50-150 سطرًا مثاليًا. الكثير من السياق يشتت التركيز.</li>
     <li><strong>حدثها مع تطور المشروع.</strong> CLAUDE.md قديم يضر أكثر مما ينفع.</li>
     <li><strong>استخدم /init مع CLAUDE_CODE_NEW_INIT=1</strong> للوضع التفاعلي المتقدم.</li>
   </ul>
@@ -1553,7 +1652,7 @@ claude mcp add adobe-mcp -- python -m adobe_mcp</pre>
 cd 00bx-photoshop-mcp
 # اتبع التعليمات لتركيب UXP plugin وتشغيل MCP server
 claude mcp add photoshop -- node /path/to/00bx-photoshop-mcp/server.js</pre>
-  <p>يشتغل على Windows و macOS. المصدر: <a href="https://github.com/00bx/00bx-photoshop-mcp">github.com/00bx/00bx-photoshop-mcp</a></p>
+  <p>يعمل على Windows و macOS. المصدر: <a href="https://github.com/00bx/00bx-photoshop-mcp">github.com/00bx/00bx-photoshop-mcp</a></p>
 
   <h3>Blender — 4 خيارات MCP</h3>
 
@@ -1625,7 +1724,7 @@ claude mcp add photoshop -- node /path/to/00bx-photoshop-mcp/server.js</pre>
       <li>WebSearch - البحث في الويب</li>
       <li>إضافات MCP السحابية (GitHub, GitLab, Linear, Discord) - تحتاج اتصالا بخدماتها</li>
     </ul>
-    <p><strong>MCP المحلي</strong> (مثل Playwright MCP, agent-browser, agent-browse) يعمل 100% أوفلاين لأنه يشتغل على جهازك ويتواصل مع سيرفر SGLang المحلي.</p>
+    <p><strong>MCP المحلي</strong> (مثل Playwright MCP, agent-browser, agent-browse) يعمل 100% بدون إنترنت لأنه يعمل على جهازك ويتواصل مع خادم SGLang المحلي.</p>
     <p>هذه الميزات ليست ضرورية لعمل Claude Code كمحرر كود ذكي.</p>
   </div>
 </section>
@@ -1648,6 +1747,22 @@ function switchOS(id) {
   var activeContent = document.getElementById('os-' + id);
   if (activeContent) activeContent.classList.add('active');
 }
+
+document.querySelectorAll('pre').forEach(function(pre) {
+  var btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = function() {
+    var text = pre.textContent.replace(btn.textContent, '').trim();
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  };
+  pre.style.position = 'relative';
+  pre.appendChild(btn);
+});
 </script>
 </body>
 </html>

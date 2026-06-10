@@ -40,6 +40,34 @@ The server is already set up and does NOT need any changes:
 
 No server-side installation is required. This package only configures the client side.
 
+#### Compatible GPU Types
+
+While this setup uses **4x H100 94GB**, SGLang works with many GPU options. Support quality varies by vendor:
+
+| GPU | VRAM | SGLang Support | Notes |
+|-----|:----:|:--------------:|-------|
+| **NVIDIA H100** | 94 GB | ✅ Full (CUDA) | Current setup. Best performance, TP up to 8 |
+| **NVIDIA H200** | 141 GB | ✅ Full (CUDA) | Drop-in upgrade from H100, faster HBM3e |
+| **NVIDIA A100** | 40/80 GB | ✅ Full (CUDA) | Previous gen, still excellent for DeepSeek V4 Flash |
+| **NVIDIA A6000** | 48 GB | ✅ Full (CUDA) | Great single-GPU option for Q4 quantized models |
+| **NVIDIA A5000** | 24 GB | ✅ Full (CUDA) | Entry-level workstation, needs quantization |
+| **NVIDIA L40S** | 48 GB | ✅ Full (CUDA) | Ada Lovelace, strong inference perf |
+| **NVIDIA RTX 5090** | 32 GB | ✅ Full (CUDA) | Latest Blackwell gen, GDDR7, works with CUDA 13 |
+| **NVIDIA RTX 5080** | 24 GB | ✅ Full (CUDA) | Blackwell gen, GDDR7, great price-to-performance |
+| **NVIDIA RTX 5070** | 16 GB | ✅ Full (CUDA) | Blackwell gen, entry-level for quantized models |
+| **NVIDIA RTX 4090** | 24 GB | ✅ Full (CUDA) | Previous flagship, still excellent |
+| **NVIDIA RTX 6000 Ada** | 48 GB | ✅ Full (CUDA) | Professional Ada generation |
+| **NVIDIA V100** | 16/32 GB | ✅ Full (CUDA) | Older but supported |
+| **AMD MI250** | 128 GB | ⚠️ Experimental (ROCm) | Requires ROCm 6+, limited testing |
+| **AMD MI300X** | 192 GB | ⚠️ Experimental (ROCm) | Largest VRAM option, ROCm ecosystem maturing |
+| **Apple M1/M2/M3/M4 Ultra** | Shared (64-192 GB) | ⚠️ Partial (MLX) | MLX backend in SGLang is experimental, limited batch size |
+
+**Key tips for choosing a GPU:**
+- **CUDA (NVIDIA)** is the most mature and recommended. Everything works out of the box.
+- **Tensor Parallelism (TP)** splits the model across multiple GPUs. With 4x H100 you run TP=4 for maximum speed.
+- **Quantization**: DeepSeek V4 Flash at FP16 needs ~150 GB. With 4-bit quantization (AWQ/GPTQ) it fits in 40-50 GB. Single GPU users will need quantized models.
+- **VRAM determines context length**: More VRAM = longer context. 94 GB H100 handles 128K+ context easily.
+
 ### B. CLIENT (Windows 10/11 or Linux)
 
 #### Required (must install)
