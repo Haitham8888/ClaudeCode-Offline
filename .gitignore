@@ -1,0 +1,8 @@
+# الملفات التنفيذية (أكبر من 100MB - GitHub لا يقبلها)
+windows/claude.exe
+linux/claude
+
+# ملفات النظام
+Thumbs.db
+.DS_Store
+*.log
