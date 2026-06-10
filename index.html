@@ -565,6 +565,197 @@ ANTHROPIC_BASE_URL=http://TBD:30000 ANTHROPIC_API_KEY=sk-offline CLAUDE_CODE_DIS
   </div>
 </div>
 
+<!-- شرح كل أمر -->
+<div class="section">
+  <h2>شرح جميع أوامر / slash commands</h2>
+
+  <table>
+    <tr><th>الأمر</th><th>الوظيفة</th><th>نوع التنفيذ</th><th>أوفلاين؟</th></tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">إدارة الجلسة</td></tr>
+    <tr>
+      <td><code>/clear</code></td>
+      <td>يبدأ جلسة جديدة بذاكرة فارغة. الجلسة السابقة تبقى على القرص وترجع لها بـ /resume</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/branch</code></td>
+      <td>ينسخ الجلسة الحالية كنقطة تفرع عشان تجرب مسار مختلف</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/resume</code></td>
+      <td>يرجع لجلسة سابقة من قائمة الجلسات المحفوظة</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/background</code></td>
+      <td>يرسل الجلسة للخلفية ويحرر التيرمينال</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/compact</code></td>
+      <td>يضغط السياق بتلخيص المحادثة لتوفير مساحة</td>
+      <td>API</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/context</code></td>
+      <td>يعرض استهلاك السياق الحالي كشبكة ملونة</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/session-id</code></td>
+      <td>يعرض معرف الجلسة الحالي</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الملفات والمشاريع</td></tr>
+    <tr>
+      <td><code>/add-dir</code></td>
+      <td>يضيف مجلد عمل جديد للجلسة</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/cd</code></td>
+      <td>ينقل الجلسة إلى مجلد عمل جديد</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/diff</code></td>
+      <td>يعرض التغييرات غير المرفوعة (unstaged) وفروق كل جولة</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/init</code></td>
+      <td>ينشئ ملف CLAUDE.md مع تعليمات للمشروع</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الوكلاء (Agents)</td></tr>
+    <tr>
+      <td><code>/agents</code></td>
+      <td>يدير الـ agents (وكلاء متخصصين). يعرض القائمة، ينشئ، يشغّل وكلاء.</td>
+      <td>محلي + API</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/fork</code></td>
+      <td>يحوّل الجلسة الحالية إلى وكيل متخصص / agent</td>
+      <td>محلي + API</td><td>✅</td>
+    </tr>
+    <tr>
+      <td>استدعاء Sub-agent</td>
+      <td>Claude ينشئ وكيل فرعي للمهام المعقدة. الوكيل الجديد يستخدم نفس API السيرفر.</td>
+      <td>API</td><td>✅</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الأسئلة والمحادثة</td></tr>
+    <tr>
+      <td><code>/btw</code></td>
+      <td>يسأل سؤال جانبي سريع دون مقاطعة المحادثة الرئيسية</td>
+      <td>API</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/copy</code></td>
+      <td>ينسخ آخر رد من Claude إلى الحافظة (أو /copy N للرد رقم N)</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الإعدادات والتخصيص</td></tr>
+    <tr>
+      <td><code>/config</code></td>
+      <td>يفتح الإعدادات (settings.json) للتعديل</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/color</code></td>
+      <td>يغير لون شريط الأوامر للجلسة الحالية</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/doctor</code></td>
+      <td>يشخص مشاكل التثبيت والإعدادات ويتحقق من صحة الاتصال</td>
+      <td>محلي + API</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/help</code></td>
+      <td>يعرض قائمة الأوامر المتاحة مع شرح مختصر</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/release-notes</code></td>
+      <td>يعرض ملاحظات الإصدار والتحديثات</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>/version</code></td>
+      <td>يعرض رقم إصدار Claude Code</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+
+    <tr><td colspan="4" style="background:#151528;color:var(--accent2);font-weight:bold">الأدوات المضمنة (Tools)</td></tr>
+    <tr>
+      <td><code>Bash</code></td>
+      <td>تنفيذ أوامر الشيل (PowerShell, CMD, Bash)</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>Edit</code></td>
+      <td>تعديل محتويات الملفات في المكان</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>Read</code></td>
+      <td>قراءة ملفات، صور، PDF، دفاتر (notebooks)</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>Glob</code></td>
+      <td>بحث سريع عن الملفات بأنماط glob</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>Grep</code></td>
+      <td>بحث عن نصوص في محتويات الملفات</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>TodoWrite</code></td>
+      <td>إنشاء وإدارة قائمة مهام منظمة</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>LS</code></td>
+      <td>سرد محتويات المجلدات</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>NotebookRead</code></td>
+      <td>قراءة ملفات Jupyter Notebook (.ipynb)</td>
+      <td>محلي</td><td>✅</td>
+    </tr>
+    <tr>
+      <td><code>WebFetch</code></td>
+      <td>جلب محتوى من URL (يحتاج اتصال)</td>
+      <td>شبكة</td><td>❌</td>
+    </tr>
+    <tr>
+      <td><code>WebSearch</code></td>
+      <td>بحث في الويب (يحتاج اتصال)</td>
+      <td>شبكة</td><td>❌</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <strong>إيضاح:</strong>
+    <ul>
+      <li><strong>محلي</strong> - الأمر ينفذ كلياً على جهازك بدون أي اتصال</li>
+      <li><strong>API</strong> - الأمر يحتاج الاتصال بـ API (سيرفر SGLang المحلي)</li>
+      <li><strong>شبكة</strong> - الأمر يحتاج إنترنت حقيقي (لن يعمل في بيئة معزولة)</li>
+    </ul>
+    فقط <code>WebFetch</code> و <code>WebSearch</code> يحتاجون إنترنت حقيقي. كل شيء آخر يشتغل أوفلاين مع سيرفر SGLang المحلي.
+  </div>
+</div>
+
 <!-- إعداد سيرفر SGLang -->
 <div class="section">
   <h2>إعداد سيرفر SGLang (DeepSeek V4 Flash)</h2>
