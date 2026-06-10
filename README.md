@@ -438,6 +438,94 @@ claude --model DeepSeek-V4-Flash
 ### 5. Agents Test
 Inside a Claude Code session, type `/agents` to list available agents.
 
+## Browser Error Review (agent-browse MCP Server)
+
+Claude Code can connect to your browser via an MCP server to read console logs, network requests, JavaScript errors, and page structure -- all as **text**, no vision required. This is ideal for offline setups where the model does not support screenshots.
+
+### Why agent-browse?
+
+| Tool | What it captures | Format | Vision needed? |
+|------|-----------------|--------|:--------------:|
+| `browser_console` | Console.log, warnings, errors (last 500) | Text | No |
+| `browser_requests` | Network requests with status codes (last 500) | JSON | No |
+| `browser_errors` | JS errors with full stack traces (last 200) | Text | No |
+| `browser_snapshot` | Accessibility tree (page structure for AI) | Text | No |
+| `browser_screenshot` | Full page or viewport screenshot | PNG | Yes (optional) |
+
+Since your model reads text only, Claude will use the text-based tools (`console`, `requests`, `errors`, `snapshot`) automatically and never request screenshots.
+
+### How it works
+
+1. Starts a **stateful browser session** (persists across tool calls)
+2. Navigates to your target URL
+3. Captures console output, network requests, and errors in real time
+4. You can click, fill forms, type, and interact -- then check results again
+
+### Installation
+
+**Option 1 -- MCP Server (recommended):**
+
+```bash
+git clone https://github.com/tollebrandon/agent-browse
+cd agent-browse
+npm install && npm run build
+claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js
+```
+
+**Option 2 -- Project-level `.mcp.json`:**
+
+Create `.mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "agent-browse": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/absolute/path/to/agent-browse/dist/index.js"]
+    }
+  }
+}
+```
+
+**Option 3 -- Global settings:**
+
+Add the same block to `~/.claude/settings.json` under `"mcpServers"`.
+
+### Usage Examples
+
+Inside a Claude Code session:
+
+> `"Open http://localhost:3000 and check the console for errors"`
+>
+> `"Navigate to my app, capture all network requests with status 4xx or 5xx, and report them"`
+>
+> `"Open the dashboard page, read the accessibility tree, and summarize the page structure"`
+>
+> `"Check the browser for JS errors with stack traces and suggest fixes"`
+
+### Offline Compatibility
+
+All communication stays local:
+- The MCP server runs on your machine -- no external API calls
+- Claude Code routes all AI inference to your local SGLang server via `ANTHROPIC_BASE_URL`
+- The browser session is entirely local (`127.0.0.1`)
+- **100% offline after initial installation**
+
+### Comparison with other browser tools
+
+| Feature | agent-browse | Claude in Chrome | Playwright MCP |
+|---------|:------------:|:-----------------:|:--------------:|
+| Console logs (structured) | 500 messages | Yes | Limited |
+| Network requests + status codes | 500 requests | Metadata only | No |
+| JS errors + stack traces | 200 errors | Partial | No |
+| Accessibility tree | Yes | Yes | Yes |
+| Stateful session | Yes | Yes | Yes |
+| Headless mode | Yes | No | Yes |
+| Works without vision | **Yes** | Partial | **Yes** |
+| 100% offline | **Yes** | Requires extension | **Yes** |
+| Chrome extension needed | No | Yes | No |
+
 ## SGLang Server Setup
 
 Start DeepSeek V4 Flash on RHEL with Podman:
@@ -497,12 +585,15 @@ curl -X POST http://TBD:30000/v1/messages \
 - Project commands (`/cd`, `/add-dir`, `/diff`, `/init`)
 - Agent management (`/agents`, `/fork`)
 - Configuration (`/config`, `/color`, `/doctor`, `/help`, `/release-notes`)
+- **Local MCP servers** (agent-browse, Playwright MCP, and any MCP server running on localhost)
 
 ## What Does Not Work Offline
 
 - **WebFetch** -- Fetches content from URLs (requires internet)
 - **WebSearch** -- Web search (requires internet)
-- **External MCP integrations** -- GitHub, GitLab, Linear, Discord (require connectivity to their services)
+- **Cloud-based MCP integrations** -- GitHub, GitLab, Linear, Discord (require connectivity to their services)
+
+**Local MCP servers** (like agent-browse for browser debugging) work 100% offline since they run on your machine and communicate with your local SGLang server.
 
 ## License
 

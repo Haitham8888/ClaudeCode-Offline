@@ -1213,6 +1213,86 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   <p><strong>الخلاصة: موديل واحد (DeepSeek V4 Flash) يكفي لتشغيل فريق كامل — جلسة رئيسية + 9 وكلاء مضمنة + وكلاء مخصصة بلا عدد + /fork غير محدود. التوثيق الرسمي يؤكد هذه المعمارية.</strong></p>
 </section>
 
+<!-- AGENT-BROWSE -->
+<section class="section">
+  <h2>فحص أخطاء المتصفح (agent-browse MCP Server)</h2>
+
+  <p>Claude Code يمكنه الاتصال بمتصفحك عبر MCP server لقراءة console logs, network requests, أخطاء JavaScript, وهيكل الصفحة — كلها <strong>كنص</strong>, لا تحتاج رؤية. هذا الحل مثالي للتشغيل الأوفلاين حيث الموديل لا يدعم الصور.</p>
+
+  <div class="info-box">
+    <strong>لماذا agent-browse الأفضل لموديل بدون رؤية؟</strong>
+    <p>جميع الأدوات الأساسية تعمل كنص: console logs (500 رسالة), network requests (500 طلب مع status codes), أخطاء JS مع stack traces (200 خطأ), Accessibility tree (هيكل الصفحة كنص). <strong>الموديل يقرأ كل شيء مباشرة بدون أي صور.</strong></p>
+  </div>
+
+  <h3>أدوات agent-browse</h3>
+
+  <table>
+    <tr><th>الأداة</th><th>الوصف</th><th>النوع</th><th>يحتاج رؤية؟</th></tr>
+    <tr><td><code>browser_console</code></td><td>يلتقط console.log, warnings, errors (آخر 500)</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_requests</code></td><td>يلتقط network requests مع status codes (آخر 500)</td><td>JSON</td><td>لا</td></tr>
+    <tr><td><code>browser_errors</code></td><td>يلتقط أخطاء JS مع full stack traces (آخر 200)</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_snapshot</code></td><td>يقرأ Accessibility tree — هيكل الصفحة للـ AI</td><td>نص</td><td>لا</td></tr>
+    <tr><td><code>browser_screenshot</code></td><td>تصوير الصفحة أو جزء منها</td><td>صورة</td><td>نعم (اختياري)</td></tr>
+  </table>
+
+  <p>بما أن موديلك يقرأ نص فقط، Claude سيستخدم الأدوات النصية (<code>console</code>, <code>requests</code>, <code>errors</code>, <code>snapshot</code>) تلقائيا ولن يطلب screenshots.</p>
+
+  <h3>كيف يعمل</h3>
+  <ol>
+    <li>يبدأ جلسة متصفح <strong>ثابتة</strong> (تستمر عبر أوامر متعددة)</li>
+    <li>يتنقل إلى الـ URL الذي تطلبه</li>
+    <li>يلتقط مخرجات console, network requests, والأخطاء في الوقت الحقيقي</li>
+    <li>يمكنك الضغط على أزرار, ملء فورمات, كتابة نصوص — ثم فحص النتائج مرة أخرى</li>
+  </ol>
+
+  <h3>طريقة التركيب</h3>
+
+  <h4>الخيار 1 — MCP Server (موصى به)</h4>
+  <pre style="direction: ltr; text-align: left;">git clone https://github.com/tollebrandon/agent-browse
+cd agent-browse
+npm install && npm run build
+claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js</pre>
+
+  <h4>الخيار 2 — ملف المشروع (.mcp.json)</h4>
+  <p>أنشئ ملف <code>.mcp.json</code> في جذر مشروعك:</p>
+  <pre style="direction: ltr; text-align: left;">{
+  "mcpServers": {
+    "agent-browse": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/absolute/path/to/agent-browse/dist/index.js"]
+    }
+  }
+}</pre>
+
+  <h3>أمثلة للاستخدام</h3>
+  <p>داخل جلسة Claude Code، اكتب:</p>
+  <ul>
+    <li><code>"افتح http://localhost:3000 وتأكد من وجود أخطاء في console"</code></li>
+    <li><code>"اذهب إلى التطبيق, التقط جميع network requests ذات status 4xx أو 5xx, وابلغني بها"</code></li>
+    <li><code>"افتح صفحة dashboard, اقرأ accessibility tree, ولخص هيكل الصفحة"</code></li>
+    <li><code>"افحص المتصفح لأخطاء JS مع stack traces واقترح إصلاحات"</code></li>
+  </ul>
+
+  <h3>مقارنة مع أدوات المتصفح الأخرى</h3>
+  <table>
+    <tr><th>الميزة</th><th>agent-browse</th><th>Claude in Chrome</th><th>Playwright MCP</th></tr>
+    <tr><td>Console logs (مهيكلة)</td><td>500 رسالة</td><td>نعم</td><td>محدود</td></tr>
+    <tr><td>Network + status codes</td><td>500 طلب</td><td>بيانات فقط</td><td>لا</td></tr>
+    <tr><td>JS errors + stack traces</td><td>200 خطأ</td><td>جزئي</td><td>لا</td></tr>
+    <tr><td>Accessibility tree</td><td>نعم</td><td>نعم</td><td>نعم</td></tr>
+    <tr><td>جلسة ثابتة (Stateful)</td><td>نعم</td><td>نعم</td><td>نعم</td></tr>
+    <tr><td>وضع headless</td><td>نعم</td><td>لا</td><td>نعم</td></tr>
+    <tr><td>يعمل بدون رؤية</td><td><strong>نعم</strong></td><td>جزئي</td><td><strong>نعم</strong></td></tr>
+    <tr><td>100% أوفلاين</td><td><strong>نعم</strong></td><td>يحتاج إضافة</td><td><strong>نعم</strong></td></tr>
+    <tr><td>يحتاج إضافة Chrome</td><td>لا</td><td>نعم</td><td>لا</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>خلاصة:</strong> agent-browse هو الحل الأقوى لفحص الأخطاء في المتصفح مع موديل بدون رؤية. console + network + errors + DOM structure — كلها كنص, كلها تشتغل مع DeepSeek V4 Flash و SGLang أوفلاين 100%.
+  </div>
+</section>
+
 <!-- CLAUDE.MD -->
 <section class="section">
   <h2>ملف تعليمات المشروع (CLAUDE.md)</h2>
@@ -1356,8 +1436,9 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
     <ul>
       <li>WebFetch - جلب محتوى من URL</li>
       <li>WebSearch - البحث في الويب</li>
-      <li>إضافات MCP الخارجية (GitHub, GitLab, Linear, Discord) - تحتاج اتصالا بخدماتها</li>
+      <li>إضافات MCP السحابية (GitHub, GitLab, Linear, Discord) - تحتاج اتصالا بخدماتها</li>
     </ul>
+    <p><strong>MCP المحلي</strong> (مثل agent-browse لفحص المتصفح) يعمل 100% أوفلاين لأنه يشتغل على جهازك ويتواصل مع سيرفر SGLang المحلي.</p>
     <p>هذه الميزات ليست ضرورية لعمل Claude Code كمحرر كود ذكي.</p>
   </div>
 </section>

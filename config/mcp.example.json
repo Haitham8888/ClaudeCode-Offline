@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/mcp",
+  "description": "Example MCP configuration for Claude Code offline browser debugging",
+  "instructions": "Place this file as .mcp.json in your project root, or merge the mcpServers block into ~/.claude/settings.json. Update the path to agent-browse/dist/index.js for your system.",
+  "mcpServers": {
+    "agent-browse": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/absolute/path/to/agent-browse/dist/index.js"
+      ],
+      "description": "Browser automation with console, network, and error capture"
+    }
+  }
+}
