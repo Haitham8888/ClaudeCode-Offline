@@ -237,6 +237,125 @@ claude --model DeepSeek-V4-Flash
 - No API costs -- since the server is local, there are no usage limits.
 - **`ANTHROPIC_DEFAULT_HAIKU_MODEL` must be set** to the same local model name. Without it, background tasks (agent naming, session summarization) attempt to reach Anthropic's cloud Haiku model and fail silently.
 
+### Multi-Agent as a Development Team
+
+One of the most powerful aspects of running Claude Code offline with multiple agents is that it mimics having an entire development team working for you in parallel. Each `/fork` creates an independent worker with its own context, tools, and mission.
+
+```
+YOU (Session Owner / Product Owner)
+  |
+  |-- /fork "code-architect"          (Architect - designs the structure)
+  |     Writes AUTH-ARCH.md, defines components, data flow
+  |
+  |-- /fork "code-reviewer"           (Senior Dev - reviews existing code)
+  |     Analyzes src/auth/, writes CODE-REVIEW.md with findings
+  |
+  |-- /fork "security-auditor"        (Security Engineer - audits)
+  |     Scans for vulnerabilities, writes SECURITY.md
+  |
+  |-- /fork "test-engineer"           (QA Engineer - writes tests)
+  |     Creates unit tests, integration tests
+  |
+  |-- /fork "legacy-analyst"          (Analyst - studies old code)
+  |     Documents legacy patterns, migration paths
+  |
+  YOU continue working in the main session while all 5 agents run concurrently.
+  Each returns results automatically when done.
+```
+
+All of these agents run simultaneously on the same single local model (DeepSeek V4 Flash). They do not wait for each other, they do not block your main session, and they do not cost anything beyond the compute power of your SGLang server. You effectively scale from one developer to a team of six with a single `/fork` command each.
+
+The key insight: a single local model is sufficient because the agents switch contexts independently. The model does not need to run multiple copies -- it processes one agent's request at a time, but each agent takes turns so quickly that from your perspective they appear to work in parallel. With SGLang's efficient batching on CUDA 13, multiple concurrent requests are handled smoothly.
+
+## Project Context (CLAUDE.md)
+
+### What is CLAUDE.md
+
+`CLAUDE.md` is a Markdown file placed in the root of your project that serves as a persistent instruction set for Claude Code. Every time you open a session in that project directory, Claude reads this file and uses it as context for understanding your project's conventions, architecture, preferences, and guidelines.
+
+Think of it as a **per-project system prompt** that you control. It is the most effective way to make Claude Code work the way you want without repeating instructions every session.
+
+### How it Works
+
+- Place `CLAUDE.md` in the root of your Git repository.
+- Claude reads it automatically when a session starts in that directory.
+- The file content is injected into the system prompt, so Claude follows it throughout the session.
+- It persists across `/clear` (new sessions in the same project still read it).
+- Changes to `CLAUDE.md` take effect on the next session start.
+- Use `/init` to create one interactively, or create it manually.
+
+### What to Put in CLAUDE.md
+
+A well-crafted CLAUDE.md typically includes:
+
+| Category | Examples |
+|----------|----------|
+| **Tech stack** | Languages, frameworks, runtime versions, package manager |
+| **Code conventions** | Naming conventions, file structure, import style, formatting rules |
+| **Testing requirements** | Test framework, coverage expectations, where tests live |
+| **Build & run commands** | How to build, test, lint, format, deploy |
+| **Project structure** | Purpose of each directory, key files, architecture decisions |
+| **Preferences** | Preferred libraries, patterns to avoid, coding style |
+| **Offline-specific notes** | Local API endpoints, model name, environment variables |
+
+### Best Practices
+
+1. **Be specific, not generic.** Instead of "write clean code", specify "use early returns, max 80 chars per line, PascalCase for types."
+2. **Include exact commands.** `npm run test`, `cargo build --release`, `python -m pytest tests/` -- so Claude can run them.
+3. **Keep it concise.** Aim for 50-150 lines. Too much context dilutes focus.
+4. **Update it as the project evolves.** Outdated CLAUDE.md misleads more than it helps.
+5. **Use `/init` for guided setup.** Set `CLAUDE_CODE_NEW_INIT=1` to enable the interactive init wizard that walks you through creating profiles, skills, and hooks.
+
+### Example CLAUDE.md
+
+```markdown
+# Project: auth-service
+
+## Tech Stack
+- Go 1.23, PostgreSQL 16, Redis 7
+- Framework: chi router, sqlx for DB, testify for tests
+- Build: `go build ./cmd/server`
+- Test: `go test ./... -race -count=1`
+
+## Code Conventions
+- Error handling: always wrap errors with context (`fmt.Errorf("fetch user %d: %w", id, err)`)
+- Logging: use structured logger (zerolog), no fmt.Print
+- HTTP handlers: separate handler + service + repository layers
+- SQL queries: use sqlx named params `:user_id` not `$1`
+
+## Testing
+- Unit tests in `_test.go` next to source files
+- Integration tests in `tests/integration/` with `//go:build integration` tag
+- Run: `make test` (unit), `make test-integration` (integration)
+- Aim for 80%+ coverage on business logic
+
+## API Design
+- RESTful, JSON request/response
+- Auth: Bearer JWT tokens
+- All endpoints prefixed with `/api/v1/`
+
+## Project Structure
+- `cmd/server/` -- main entrypoint
+- `internal/handler/` -- HTTP handlers
+- `internal/service/` -- business logic
+- `internal/repository/` -- data access
+- `migrations/` -- SQL migrations (goose)
+```
+
+### CLAUDE.md vs settings.json
+
+| File | Scope | Purpose |
+|------|-------|---------|
+| `CLAUDE.md` | Per-project | Instructions, conventions, commands for Claude's behavior in that project |
+| `~/.claude/settings.json` | Global / user-wide | Environment variables, permissions, API configuration, feature toggles |
+| `~/.claude/projects/<project>/claude.json` | Per-project settings | Project-specific overrides for settings.json |
+
+All three files work together. `settings.json` controls how Claude Code connects (API endpoint, keys, telemetry). `CLAUDE.md` controls what Claude does once connected (code style, commands, conventions).
+
+### Multi-Project Tip
+
+You can have different `CLAUDE.md` files in each project directory. Open a session in Project A and Claude follows Project A's conventions. Use `/cd <path>` to move your session to Project B, and Claude adapts to that project's CLAUDE.md mid-session (requires v2.1.169+).
+
 ## Bundled Agents
 
 The following agents are pre-installed from the official marketplace and stored locally:

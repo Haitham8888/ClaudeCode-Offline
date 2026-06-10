@@ -1161,6 +1161,158 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   <div class="note">
     <strong>خلاصة:</strong> ميزة تعدد الوكلاء تعمل بكامل طاقتها أوفلاين. يمكنك تفويض مهام متعددة لـ 10 وكلاء بالتوازي، وجميعهم يرسلون طلباتهم إلى سيرفر SGLang المحلي دون الحاجة لأي اتصال إنترنت أو حساب مدفوع.
   </div>
+
+  <h4>الوكلاء المتعددون = فريق تطوير كامل</h4>
+  <p>من أقوى مزايا التشغيل الأوفلاين متعدد الوكلاء هي القدرة على محاكاة فريق تطوير كامل يعمل بالتوازي. كل /fork ينشئ عاملا مستقلا بسياقه وأدواته ومهمته الخاصة.</p>
+
+  <pre style="direction: ltr; text-align: left; line-height: 2;">
+  أنت (صاحب الجلسة / Product Owner)
+    |
+    |-- /fork "code-architect"          (معماري - يصمم الهيكل)
+    |     يكتب AUTH-ARCH.md, يعرف المكونات وتدفق البيانات
+    |
+    |-- /fork "code-reviewer"           (مطور أول - يراجع الكود)
+    |     يحلل src/auth/, يكتب CODE-REVIEW.md
+    |
+    |-- /fork "security-auditor"        (مهندس أمن - يدقق)
+    |     يفحص الثغرات, يكتب SECURITY.md
+    |
+    |-- /fork "test-engineer"           (مهندس اختبارات)
+    |     ينشئ اختبارات وحدة و integration
+    |
+    |-- /fork "legacy-analyst"          (محلل - يدرس الكود القديم)
+    |     يوثق الأنماط القديمة ومسارات الترحيل
+    |
+    أنت تواصل العمل في الجلسة الرئيسية وكل الوكلاء الخمسة يعملون بالتزامن.
+    كل واحد يرجع نتيجته تلقائيا عندما ينتهي.
+  </pre>
+
+  <p>كل هؤلاء الوكلاء يعملون في نفس الوقت على نفس الموديل المحلي الواحد (DeepSeek V4 Flash). لا ينتظرون بعضهم، لا يوقفون جلستك الرئيسية، ولا يكلفون شيئا. أنت تتوسع من مطور واحد إلى فريق كامل بمجرد أوامر /fork.</p>
+
+  <p><strong>كيف يعمل هذا بموديل واحد؟</strong> الموديل المحلي يعالج طلبات وكيل واحد في كل مرة، لكن التبديل بين الوكلاء سريع جدا لدرجة أنهم يبدون وكأنهم يعملون بالتوازي. مع SGLang و CUDA 13، الـ batching الفعال يتعامل مع عدة طلبات متزامنة بسلاسة.</p>
+</section>
+
+<!-- CLAUDE.MD -->
+<section class="section">
+  <h2>ملف تعليمات المشروع (CLAUDE.md)</h2>
+
+  <p><code>CLAUDE.md</code> هو ملف Markdown في جذر مشروعك يعمل كمجموعة تعليمات دائمة لـ Claude Code. كلما فتحت جلسة في مجلد المشروع، يقرأ Claude هذا الملف ويستخدمه كسياق لفهم conventions مشروعك ومعمارية وتفضيلاتك.</p>
+
+  <p>اعتبرها <strong>system prompt خاصة بكل مشروع</strong> تتحكم فيها أنت. هي الطريقة الأكثر فعالية لجعل Claude Code يعمل بالطريقة التي تريدها دون تكرار التعليمات كل جلسة.</p>
+
+  <h3>كيف يعمل</h3>
+  <ul>
+    <li>ضع <code>CLAUDE.md</code> في جذر مشروعك (بجانب package.json, Cargo.toml, go.mod إلخ).</li>
+    <li>Claude Code يقرأه تلقائيا عند بدء جلسة في ذلك المجلد.</li>
+    <li>محتوى الملف يحقن في system prompt، لذا Claude يتبعه طوال الجلسة.</li>
+    <li>يستمر عبر /clear (الجلسات الجديدة في نفس المشروع تقرأه مجددا).</li>
+    <li>التغييرات على CLAUDE.md تطبق عند بدء الجلسة التالية.</li>
+    <li>استخدم <code>/init</code> لإنشائه تفاعليا، أو أنشئه يدويا.</li>
+    <li>إذا كان <code>CLAUDE_CODE_NEW_INIT=1</code>، يفتح وضعا تفاعليا متقدما لإنشاء الملفات الشخصية والـ skills و hooks.</li>
+  </ul>
+
+  <h3>ماذا تضع في CLAUDE.md</h3>
+
+  <table>
+    <tr><th>التصنيف</th><th>أمثلة</th></tr>
+    <tr>
+      <td><strong>التقنيات المستخدمة</strong></td>
+      <td>اللغات، الفريموركات، إصدارات runtime، مدير الحزم</td>
+    </tr>
+    <tr>
+      <td><strong>قواعد الكود</strong></td>
+      <td>أسلوب التسمية، هيكل الملفات، قواعد الـ import، formatting</td>
+    </tr>
+    <tr>
+      <td><strong>متطلبات الاختبارات</strong></td>
+      <td>إطار الاختبارات، تغطية متوقعة، أين توجد الاختبارات</td>
+    </tr>
+    <tr>
+      <td><strong>أوامر البناء والتشغيل</strong></td>
+      <td>كيف تبني، تختبر، تشغل linter، تنشر</td>
+    </tr>
+    <tr>
+      <td><strong>هيكل المشروع</strong></td>
+      <td>الغرض من كل مجلد، الملفات الرئيسية، قرارات معمارية</td>
+    </tr>
+    <tr>
+      <td><strong>التفضيلات</strong></td>
+      <td>المكتبات المفضلة، الأنماط الممنوعة، أسلوب الكود</td>
+    </tr>
+    <tr>
+      <td><strong>ملاحظات الأوفلاين</strong></td>
+      <td>API المحلي، اسم الموديل، متغيرات البيئة المطلوبة</td>
+    </tr>
+  </table>
+
+  <h3>نصائح لأفضل CLAUDE.md</h3>
+  <ul>
+    <li><strong>كن محددا، لا عام.</strong> بدل "اكتب كود نظيف"، قل "استخدم early returns، أقصى 80 حرفا لكل سطر، PascalCase للـ types".</li>
+    <li><strong>أضف الأوامر الدقيقة.</strong> <code>npm run test</code>، <code>cargo build --release</code>، <code>python -m pytest tests/</code> — حتى يتمكن Claude من تشغيلها.</li>
+    <li><strong>خليها موجزة.</strong> 50-150 سطرا مثالياً. الكثير من السياق يشتت التركيز.</li>
+    <li><strong>حدثها مع تطور المشروع.</strong> CLAUDE.md قديم يضر أكثر مما ينفع.</li>
+    <li><strong>استخدم /init مع CLAUDE_CODE_NEW_INIT=1</strong> للوضع التفاعلي المتقدم.</li>
+  </ul>
+
+  <h3>مثال CLAUDE.md</h3>
+
+  <pre><span class="comment"># Project: auth-service</span>
+
+  <span class="comment">## Tech Stack</span>
+  - Go 1.23, PostgreSQL 16, Redis 7
+  - Framework: chi router, sqlx for DB, testify for tests
+  - Build: <span class="cmd">go build ./cmd/server</span>
+  - Test: <span class="cmd">go test ./... -race -count=1</span>
+
+  <span class="comment">## Code Conventions</span>
+  - Error handling: always wrap errors with context (<span class="cmd">fmt.Errorf("fetch user %d: %w", id, err)</span>)
+  - Logging: use structured logger (zerolog), no fmt.Print
+  - HTTP handlers: separate handler + service + repository layers
+  - SQL queries: use sqlx named params <span class="cmd">:user_id</span> not <span class="cmd">$1</span>
+
+  <span class="comment">## Testing</span>
+  - Unit tests in _test.go next to source files
+  - Integration tests in tests/integration/ with <span class="cmd">//go:build integration</span> tag
+  - Run: <span class="cmd">make test</span> (unit), <span class="cmd">make test-integration</span> (integration)
+  - Aim for 80%+ coverage on business logic
+
+  <span class="comment">## API Design</span>
+  - RESTful, JSON request/response
+  - Auth: Bearer JWT tokens
+  - All endpoints prefixed with <span class="cmd">/api/v1/</span>
+
+  <span class="comment">## Project Structure</span>
+  - cmd/server/     -- main entrypoint
+  - internal/handler/   -- HTTP handlers
+  - internal/service/  -- business logic
+  - internal/repository/   -- data access
+  - migrations/     -- SQL migrations (goose)</pre>
+
+  <h3>الفرق بين CLAUDE.md و settings.json</h3>
+
+  <table>
+    <tr><th>الملف</th><th>النطاق</th><th>الغرض</th></tr>
+    <tr>
+      <td><code>CLAUDE.md</code></td>
+      <td>كل مشروع على حدة</td>
+      <td>تعليمات، conventions، أوامر — كيف يتصرف Claude في هذا المشروع بالذات</td>
+    </tr>
+    <tr>
+      <td><code>~/.claude/settings.json</code></td>
+      <td>عام / المستخدم كله</td>
+      <td>متغيرات البيئة، الصلاحيات، إعدادات API، خيارات الميزات</td>
+    </tr>
+    <tr>
+      <td><code>~/.claude/projects/&lt;project&gt;/claude.json</code></td>
+      <td>إعدادات خاصة بمشروع</td>
+      <td>تجاوزات (overrides) لـ settings.json خاصة بمشروع معين</td>
+    </tr>
+  </table>
+
+  <p>الملفات الثلاثة تعمل معاً. <code>settings.json</code> يتحكم في كيفية اتصال Claude Code (API endpoint, المفاتيح, التليمتري). <code>CLAUDE.md</code> يتحكم في ماذا يفعل Claude بعد الاتصال (أسلوب الكود, الأوامر, conventions).</p>
+
+  <h3>نصيحة للمشاريع المتعددة</h3>
+  <p>يمكن أن يكون لديك ملفات <code>CLAUDE.md</code> مختلفة في كل مشروع. افتح جلسة في المشروع A و Claude يتبع conventions المشروع A. استخدم <code>/cd &lt;path&gt;</code> لنقل جلستك إلى المشروع B، و Claude يتكيف مع CLAUDE.md الخاص بذلك المشروع في منتصف الجلسة (يتطلب v2.1.169+).</p>
 </section>
 
 <!-- SUMMARY -->
