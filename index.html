@@ -427,7 +427,7 @@ ClaudeCode-Offline-Package/
   <ul>
     <li><strong>المعالج:</strong> 4x H100 94GB GPUs</li>
     <li><strong>النظام:</strong> RHEL 10 مع Podman + CUDA 13</li>
-    <li><strong>SGLang:</strong> شغال على <code>v0.5.12.post1</code> مع <code>/v1/messages</code> endpoint على منفذ 30000</li>
+    <li><strong>SGLang:</strong> شغال على <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.12"><code>v0.5.12.post1</code></a> مع CUDA 13 + Torch 2.11 + <code>/v1/messages</code> endpoint على منفذ 30000</li>
     <li><strong>الموديل:</strong> DeepSeek V4 Flash محمّل مع <code>--tool-call-parser deepseekv3</code></li>
     <li><strong>IP:</strong> متاح على <code>http://TBD:30000</code> على الشبكة المحلية</li>
   </ul>
@@ -450,14 +450,14 @@ ClaudeCode-Offline-Package/
     <tr>
       <td><strong>Git</strong></td>
       <td>أي إصدار حديث</td>
-      <td><code>winget install Git.Git</code></td>
+      <td><a href="https://git-scm.com"><code>winget install Git.Git</code></a></td>
       <td><code>sudo dnf install git</code></td>
       <td>مطلوب من Claude Code</td>
     </tr>
     <tr>
       <td><strong>Node.js</strong></td>
       <td>18+</td>
-      <td><code>winget install OpenJS.NodeJS</code></td>
+      <td><a href="https://nodejs.org"><code>winget install OpenJS.NodeJS</code></a></td>
       <td><code>sudo dnf install nodejs</code></td>
       <td>مطلوب لمخدمات MCP</td>
     </tr>
@@ -465,26 +465,26 @@ ClaudeCode-Offline-Package/
 
   <h4>اختياري (موصى به)</h4>
   <table>
-    <tr><th>البرنامج</th><th>الغرض</th><th>التثبيت</th></tr>
+    <tr><th>البرنامج</th><th>الغرض</th><th>التحميل</th></tr>
     <tr>
       <td><strong>VS Code</strong></td>
       <td>محرر أكواد مع دمج Claude Code</td>
-      <td><code>winget install Microsoft.VisualStudioCode</code></td>
+      <td><a href="https://code.visualstudio.com"><code>winget install Microsoft.VisualStudioCode</code></a></td>
     </tr>
     <tr>
-      <td><strong>Playwright MCP (Microsoft)</strong></td>
+      <td><strong><a href="https://github.com/microsoft/playwright-mcp">Playwright MCP (Microsoft)</a></strong></td>
       <td>أداة فحص المتصفح — console, network, errors</td>
       <td><code>npx @playwright/mcp</code></td>
     </tr>
     <tr>
-      <td><strong>agent-browser (Vercel Labs)</strong></td>
+      <td><strong><a href="https://github.com/vercel-labs/agent-browser">agent-browser (Vercel Labs)</a></strong></td>
       <td>أداة متصفح تعتمد على النص فقط (~200 توكين لكل صفحة)</td>
       <td><code>npx agent-browser</code></td>
     </tr>
     <tr>
       <td><strong>Chrome / Edge</strong></td>
       <td>متصفح للاختبار اليدوي أو مع MCP</td>
-      <td><code>winget install Google.Chrome</code></td>
+      <td><a href="https://www.google.com/chrome"><code>winget install Google.Chrome</code></a></td>
     </tr>
   </table>
 
@@ -1284,7 +1284,7 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
 
   <p>Claude Code يمكنه الاتصال بمتصفحك عبر MCP servers لقراءة console logs, network requests, أخطاء JavaScript, وهيكل الصفحة — كلها <strong>كنص</strong>, لا تحتاج رؤية. هذا الحل مثالي للتشغيل الأوفلاين حيث الموديل لا يدعم الصور.</p>
 
-  <h3>الموصى به: Playwright MCP (Microsoft)</h3>
+  <h3>الموصى به: <a href="https://github.com/microsoft/playwright-mcp">Playwright MCP (Microsoft)</a></h3>
   <p>مخدم MCP الرسمي من Microsoft لأتمتة المتصفح مع فحص console و network:</p>
 
   <table>
@@ -1299,7 +1299,7 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   <pre style="direction: ltr; text-align: left;">npx @playwright/mcp
 claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless</pre>
 
-  <h3>بديل: agent-browse (tollebrandon)</h3>
+  <h3>بديل: <a href="https://github.com/tollebrandon/agent-browse">agent-browse (tollebrandon)</a></h3>
   <p>التقاط مهيكل أكثر للأخطاء مع أدوات مخصصة:</p>
 
   <table>
@@ -1315,7 +1315,7 @@ claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless</p
 cd agent-browse && npm install && npm run build
 claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist/index.js</pre>
 
-  <h3>بديل: agent-browser (Vercel Labs)</h3>
+  <h3>بديل: <a href="https://github.com/vercel-labs/agent-browser">agent-browser (Vercel Labs)</a> — <a href="https://www.npmjs.com/package/agent-browser">npm</a></h3>
   <p>أداة متصفح تعتمد على Accessibility tree فقط (~200 توكين لكل صفحة, أقل 17x من screenshots). مثالية للفحص الخفيف:</p>
   <pre style="direction: ltr; text-align: left;">npx agent-browser</pre>
 

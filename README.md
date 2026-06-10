@@ -44,20 +44,20 @@ No server-side installation is required. This package only configures the client
 
 #### Required (must install)
 
-| Software | Version | Windows | Linux | Purpose |
-|----------|---------|---------|-------|---------|
-| **Claude Code CLI** | v2.1.170 | `windows/claude.exe` | `linux/claude` | The AI coding agent |
-| **Git** | Any recent | `winget install Git.Git` | `sudo dnf install git` | Required by Claude Code |
-| **Node.js** | 18+ | `winget install OpenJS.NodeJS` | `sudo dnf install nodejs` | Required by MCP servers |
+| Software | Version | Download / Install | Purpose |
+|----------|---------|-------------------|---------|
+| **Claude Code CLI** | v2.1.170 | `windows/claude.exe` or `linux/claude` (in this package) | The AI coding agent |
+| **Git** | Any recent | Windows: [`winget install Git.Git`](https://git-scm.com) / Linux: `sudo dnf install git` | Required by Claude Code |
+| **Node.js** | 18+ | Windows: [`winget install OpenJS.NodeJS`](https://nodejs.org) / Linux: `sudo dnf install nodejs` | Required by MCP servers |
 
 #### Optional but Recommended
 
-| Software | Purpose | Install Command (Windows) | Install Command (Linux) |
-|----------|---------|--------------------------|------------------------|
-| **VS Code** | Code editor with Claude Code integration | `winget install Microsoft.VisualStudioCode` | `sudo rpm --import ...` |
-| **Playwright MCP** (Microsoft) | Browser error/console/network review | `npx @playwright/mcp` | `npx @playwright/mcp` |
-| **agent-browser** (Vercel Labs) | Text-first browser page inspection | `npx agent-browser` | `npx agent-browser` |
-| **Chrome / Edge** | Optional headed browser testing | `winget install Google.Chrome` | via dnf/flatpak |
+| Software | Purpose | Download |
+|----------|---------|----------|
+| **VS Code** | Code editor with Claude Code integration | [`winget install Microsoft.VisualStudioCode`](https://code.visualstudio.com) |
+| **Playwright MCP** (Microsoft) | Browser error/console/network review | [`npx @playwright/mcp`](https://github.com/microsoft/playwright-mcp) |
+| **agent-browser** (Vercel Labs) | Text-first browser page inspection | [`npx agent-browser`](https://github.com/vercel-labs/agent-browser) |
+| **Chrome / Edge** | Optional headed browser testing | [`winget install Google.Chrome`](https://www.google.com/chrome) |
 
 #### Network Requirements
 
@@ -483,7 +483,7 @@ Claude Code can connect to your browser via MCP servers to read console logs, ne
 
 ### Recommended: Playwright MCP (Microsoft)
 
-The official Playwright MCP server from Microsoft provides browser automation with console and network inspection:
+The official [Playwright MCP](https://github.com/microsoft/playwright-mcp) server from Microsoft provides browser automation with console and network inspection:
 
 | Tool | What it captures | Format | Vision needed? |
 |------|-----------------|--------|:--------------:|
@@ -504,7 +504,7 @@ claude mcp add --transport stdio playwright -- npx @playwright/mcp --headless
 
 ### Alternative: agent-browse (tollebrandon)
 
-Provides more structured error capture with dedicated tools:
+Provides more structured error capture with dedicated tools. [GitHub repository](https://github.com/tollebrandon/agent-browse):
 
 | Tool | What it captures | Format | Vision needed? |
 |------|-----------------|--------|:--------------:|
@@ -522,7 +522,7 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
 
 ### Alternative: agent-browser (Vercel Labs)
 
-A text-first browser tool using accessibility tree only (~200-300 tokens per page, 17x reduction vs screenshots). Ideal for lightweight page structure inspection:
+A text-first browser tool using accessibility tree only (~200-300 tokens per page, 17x reduction vs screenshots). Ideal for lightweight page structure inspection. [GitHub](https://github.com/vercel-labs/agent-browser) / [npm](https://www.npmjs.com/package/agent-browser):
 ```bash
 npx agent-browser
 ```
@@ -600,7 +600,7 @@ All communication stays local:
 The SGLang server is **already running** on your RHEL 10 machine. No setup is needed.
 
 **Current Specifications:**
-- **SGLang:** v0.5.12.post1 (latest stable with CUDA 13 + Torch 2.11)
+- **SGLang:** [v0.5.12.post1](https://github.com/sgl-project/sglang/releases/tag/v0.5.12) (latest stable with CUDA 13 + Torch 2.11)
 - **Model:** DeepSeek V4 Flash with `--tool-call-parser deepseekv3`
 - **Endpoint:** `http://TBD:30000/v1/messages`
 - **GPU:** 4x H100 94GB with Tensor Parallelism (tp=4)
