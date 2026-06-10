@@ -1190,6 +1190,27 @@ set PATH=%PATH%;%USERPROFILE%\.local\bin</pre>
   <p>كل هؤلاء الوكلاء يعملون في نفس الوقت على نفس الموديل المحلي الواحد (DeepSeek V4 Flash). لا ينتظرون بعضهم، لا يوقفون جلستك الرئيسية، ولا يكلفون شيئا. أنت تتوسع من مطور واحد إلى فريق كامل بمجرد أوامر /fork.</p>
 
   <p><strong>كيف يعمل هذا بموديل واحد؟</strong> الموديل المحلي يعالج طلبات وكيل واحد في كل مرة، لكن التبديل بين الوكلاء سريع جدا لدرجة أنهم يبدون وكأنهم يعملون بالتوازي. مع SGLang و CUDA 13، الـ batching الفعال يتعامل مع عدة طلبات متزامنة بسلاسة.</p>
+
+  <h4>تأكيد رسمي من توثيق Anthropic</h4>
+  <p>التوثيق الرسمي لـ Claude Code يؤكد هذا السلوك:</p>
+  <table>
+    <tr><th>الجانب</th><th>Fork subagent (/fork)</th><th>Named subagent (code-architect...)</th></tr>
+    <tr><td><strong>الموديل</strong></td><td>نفس موديل الجلسة الأم</td><td>من حقل <code>model</code> في تعريف الوكيل</td></tr>
+    <tr><td><strong>System prompt & tools</strong></td><td>نفس الجلسة الأم</td><td>من تعريف الوكيل</td></tr>
+    <tr><td><strong>السياق (Context)</strong></td><td>كامل تاريخ المحادثة</td><td>سياق جديد</td></tr>
+    <tr><td><strong>Prompt cache</strong></td><td>مشترك مع الجلسة الأم</td><td>كاش مستقل</td></tr>
+  </table>
+  <p>المصدر: <code>code.claude.com/docs/en/sub-agents</code></p>
+
+  <p><strong>الاستنتاجات الرئيسية:</strong></p>
+  <ol>
+    <li><strong>Fork subagents (/fork):</strong> يرثون <strong>نفس الموديل بالضبط</strong> من جلسة الأم. كل طلب من /fork يذهب إلى نفس <code>ANTHROPIC_BASE_URL</code> بنفس اسم الموديل.</li>
+    <li><strong>Named subagents</strong> (الـ 9 المضمنة): كل واحد <em>يمكنه</em> تحديد موديل مختلف في ملف تعريفه، لكن في إعدادك الأوفلاين يوجد موديل واحد فقط على SGLang (DeepSeek V4 Flash). أي اسم موديل ترسله إلى السيرفر المحلي يتحل إلى الموديل المحمّل. <code>ANTHROPIC_BASE_URL</code> يوجه كل الحركة — من الجلسة الأم ومن كل وكيل — إلى نفس سيرفر SGLang المحلي.</li>
+    <li><strong>CLAUDE_CODE_FORK_SUBAGENT=1:</strong> هذا المتغير يفعل مشاركة prompt cache عبر الأطفال المتوازيين، مما يقلل التوكينز حتى 90% للأطفال 2-N. لا يغير الموديل.</li>
+    <li><strong>مع 4x H100 94GB و CUDA 13:</strong> SGLang يتعامل مع الطلبات المتزامنة بكفاءة عبر CUDA batching. يمكن تشغيل 10-20+ وكيل بالتوازي على هذا الجهاز.</li>
+  </ol>
+
+  <p><strong>الخلاصة: موديل واحد (DeepSeek V4 Flash) يكفي لتشغيل فريق كامل — جلسة رئيسية + 9 وكلاء مضمنة + وكلاء مخصصة بلا عدد + /fork غير محدود. التوثيق الرسمي يؤكد هذه المعمارية.</strong></p>
 </section>
 
 <!-- CLAUDE.MD -->

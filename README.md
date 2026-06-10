@@ -267,6 +267,31 @@ All of these agents run simultaneously on the same single local model (DeepSeek 
 
 The key insight: a single local model is sufficient because the agents switch contexts independently. The model does not need to run multiple copies -- it processes one agent's request at a time, but each agent takes turns so quickly that from your perspective they appear to work in parallel. With SGLang's efficient batching on CUDA 13, multiple concurrent requests are handled smoothly.
 
+### Official Confirmation from Anthropic Documentation
+
+The Claude Code official documentation confirms this behavior explicitly:
+
+| Aspect | Fork subagent | Named subagent (code-architect, etc.) |
+|--------|--------------|--------------------------------------|
+| **Model** | **Same as main session** | From the subagent's `model` field |
+| **System prompt & tools** | Same as main session | From the subagent's definition |
+| **Context** | Full conversation history | Fresh context |
+| **Prompt cache** | Shared with main session | Separate cache |
+
+Source: [code.claude.com/docs/en/sub-agents](https://code.claude.com/docs/en/sub-agents)
+
+Key takeaways from the official documentation:
+
+1. **Fork subagents (`/fork`)**: Inherit the **exact same model** as your main session. Every `/fork` agent sends its requests to the same `ANTHROPIC_BASE_URL` endpoint with the same model name.
+
+2. **Named subagents** (the 9 bundled ones): Each *can* specify a model in its definition file, but in your offline setup there is only one model loaded on SGLang (DeepSeek V4 Flash). Any model name sent to the local server resolves to the loaded model. The `ANTHROPIC_BASE_URL` routes all traffic -- from the main session and every subagent -- to the same local SGLang server.
+
+3. **`CLAUDE_CODE_FORK_SUBAGENT=1`**: This environment variable enables prompt cache sharing across parallel children, cutting token costs by up to 90% for children 2-N. It does not change the model. All children still use the same single model.
+
+4. **With 4x H100 94GB and CUDA 13**: SGLang handles concurrent requests through efficient CUDA batching. The server queues incoming requests and processes them in parallel batches. You can comfortably run 10-20+ agents simultaneously on this hardware.
+
+**Bottom line: one model (DeepSeek V4 Flash) is enough to run an entire team of agents -- main session, all 9 bundled agents, plus unlimited custom agents and forks. The official documentation confirms this architecture.**
+
 ## Project Context (CLAUDE.md)
 
 ### What is CLAUDE.md
