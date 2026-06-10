@@ -588,12 +588,6 @@ podman run --gpus all \
     --port 30000 \
     --tool-call-parser deepseekv3
 ```
-    --model-path /models/DeepSeek-V4-Flash \
-    --tp 4 \
-    --host 0.0.0.0 \
-    --port 30000 \
-    --tool-call-parser deepseekv3
-```
 
 The `--tool-call-parser deepseekv3` flag is required for Claude Code tool-calling support (Bash, Edit, Read, etc.).
 
