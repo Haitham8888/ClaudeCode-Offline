@@ -675,6 +675,73 @@ curl -X POST http://TBD:30000/v1/messages \
 
 **Local MCP servers** (Playwright MCP, agent-browser, agent-browse) work 100% offline since they run on your machine and communicate with your local SGLang server.
 
+## Next Steps: Creative Cloud MCP Servers
+
+Once Claude Code is running offline, you can extend it with MCP servers for Adobe Creative Cloud and Blender. All of these work 100% offline -- they run on your local machine and all AI inference routes to your SGLang server via `ANTHROPIC_BASE_URL`.
+
+### Adobe Creative Cloud (All Apps) -- `VoidChecksum/adobe-mcp`
+
+A single MCP server that controls every Adobe application through COM automation (Windows only).
+
+| App | Tools |
+|-----|:-----:|
+| **Photoshop** | 13 tools (layers, filters, text, export, batch, smart objects...) |
+| **Illustrator** | 5 tools |
+| **Premiere Pro** | 6 tools |
+| **After Effects** | 6 tools |
+| **InDesign** | 3 tools |
+| **Animate** | 2 tools |
+
+```bash
+pip install adobe-mcp
+claude mcp add adobe-mcp -- python -m adobe_mcp
+```
+
+Requires Windows (COM automation). Source: [github.com/VoidChecksum/adobe-mcp](https://github.com/VoidChecksum/adobe-mcp)
+
+### Photoshop Only -- `00bx/00bx-photoshop-mcp`
+
+The most powerful Photoshop-specific MCP with **323 tools** and 7 built-in AI skills. Installs a UXP plugin + MCP server.
+
+```bash
+git clone https://github.com/00bx/00bx-photoshop-mcp
+cd 00bx-photoshop-mcp
+# Follow the README to install the UXP plugin and start the MCP server
+claude mcp add photoshop -- node /path/to/00bx-photoshop-mcp/server.js
+```
+
+Works on Windows & macOS. Source: [github.com/00bx/00bx-photoshop-mcp](https://github.com/00bx/00bx-photoshop-mcp)
+
+### Blender -- Multiple MCP Options
+
+| Project | Tools | Highlights |
+|---------|:-----:|------------|
+| **ahujasid/blender-mcp** | ~30 tools | Most popular, PolyHaven/Hyper3D integration, Adobe-announced |
+| **Gaius114/blender-claude-mcp** | Full | **HTTP bridge**, zero dependencies, Blender 4.x & 5.x, Geometry Nodes, Rendering, EEVEE |
+| **MickeyBadBad/atelier-mcp** | **80 tools** | Sketchfab, AmbientCG, Tripo3D, Meshy, Hunyuan3D |
+| **Blender Foundation (official)** | Basic | Official MCP Server from Blender Lab + Llama.cpp |
+
+**Easiest install (ahujasid/blender-mcp):**
+```bash
+claude mcp add blender uvx blender-mcp
+# Then open Blender, install addon.py, and click "Connect to Claude"
+```
+
+Source: [github.com/ahujasid/blender-mcp](https://github.com/ahujasid/blender-mcp)
+
+### How All MCP Servers Work with Your Setup
+
+1. You install the MCP server on your local machine
+2. Register it with Claude Code via `claude mcp add`
+3. Claude Code connects to the MCP server via stdio or WebSocket
+4. **All AI inference** still goes to your local SGLang server -- MCP tool calls do not change the model or endpoint
+5. Everything stays 100% offline
+
+**Recommended install order:**
+1. `adobe-mcp` -- all Adobe apps in one server
+2. `ahujasid/blender-mcp` or `Gaius114/blender-claude-mcp` -- Blender control
+3. `00bx/00bx-photoshop-mcp` -- if you need the full 323 Photoshop tools
+
 ## License
 
 This package bundles Claude Code v2.1.170, which is subject to Anthropic's terms of service. All configuration files and scripts are provided for offline setup purposes only.

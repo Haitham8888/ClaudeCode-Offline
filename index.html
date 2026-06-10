@@ -1518,6 +1518,91 @@ claude mcp add --transport stdio agent-browse -- node /path/to/agent-browse/dist
   <p>يمكن أن يكون لديك ملفات <code>CLAUDE.md</code> مختلفة في كل مشروع. افتح جلسة في المشروع A و Claude يتبع conventions المشروع A. استخدم <code>/cd &lt;path&gt;</code> لنقل جلستك إلى المشروع B، و Claude يتكيف مع CLAUDE.md الخاص بذلك المشروع في منتصف الجلسة (يتطلب v2.1.169+).</p>
 </section>
 
+<!-- NEXT STEPS MCP -->
+<section class="section">
+  <h2>الخطوات المستقبلية: إضافة برامج التصميم <span class="accent">(Adobe + Blender)</span></h2>
+
+  <p>بعد تشغيل Claude Code أوفلاين، يمكنك توسيعه بإضافة مخدمات MCP لبرامج Adobe Creative Cloud و Blender. كل هذه المخدمات تعمل 100% أوفلاين — تشتغل على جهازك وكل طلبات AI تذهب إلى سيرفر SGLang المحلي عبر <code>ANTHROPIC_BASE_URL</code>.</p>
+
+  <div class="note">
+    <strong>مبدأ العمل:</strong> الموديل يبقى DeepSeek V4 Flash على SGLang. مخدمات MCP هي أدوات فقط — Claude Code يرسل له أوامر (مثل "غيّر لون الطبقة" أو "أضف منحنى") وهو ينفذها محليا. كل التفكير والذكاء يبقى على سيرفرك.
+  </div>
+
+  <h3>Adobe Creative Cloud كاملة — <code>VoidChecksum/adobe-mcp</code></h3>
+  <p>مخدم MCP واحد يتحكم بكل برامج أدوبي عبر COM automation (Windows فقط):</p>
+
+  <table>
+    <tr><th>البرنامج</th><th>عدد الأدوات</th><th>أمثلة</th></tr>
+    <tr><td><strong>Photoshop</strong></td><td>13</td><td>layers, filters, text, export, batch, smart objects</td></tr>
+    <tr><td><strong>Illustrator</strong></td><td>5</td><td>تعديل المسارات، الأشكال، التصدير</td></tr>
+    <tr><td><strong>Premiere Pro</strong></td><td>6</td><td>تحرير الفيديو، المونتاج، التصدير</td></tr>
+    <tr><td><strong>After Effects</strong></td><td>6</td><td>الحركة، المؤثرات البصرية، التركيب</td></tr>
+    <tr><td><strong>InDesign</strong></td><td>3</td><td>تنسيق الصفحات، النصوص، التصدير</td></tr>
+    <tr><td><strong>Animate</strong></td><td>2</td><td>الرسوم المتحركة، التصدير</td></tr>
+  </table>
+
+  <h4>طريقة التركيب</h4>
+  <pre style="direction: ltr; text-align: left;">pip install adobe-mcp
+claude mcp add adobe-mcp -- python -m adobe_mcp</pre>
+  <p>المصدر: <a href="https://github.com/VoidChecksum/adobe-mcp">github.com/VoidChecksum/adobe-mcp</a></p>
+
+  <h3>Photoshop فقط — <code>00bx/00bx-photoshop-mcp</code></h3>
+  <p>أقوى مخدم MCP مخصص لـ Photoshop مع <strong>323 أداة</strong> و 7 مهارات AI مدمجة. يركب UXP plugin + MCP server معاً.</p>
+
+  <pre style="direction: ltr; text-align: left;">git clone https://github.com/00bx/00bx-photoshop-mcp
+cd 00bx-photoshop-mcp
+# اتبع التعليمات لتركيب UXP plugin وتشغيل MCP server
+claude mcp add photoshop -- node /path/to/00bx-photoshop-mcp/server.js</pre>
+  <p>يشتغل على Windows و macOS. المصدر: <a href="https://github.com/00bx/00bx-photoshop-mcp">github.com/00bx/00bx-photoshop-mcp</a></p>
+
+  <h3>Blender — 4 خيارات MCP</h3>
+
+  <table>
+    <tr><th>المشروع</th><th>الأدوات</th><th>المميزات</th></tr>
+    <tr>
+      <td><strong>ahujasid/blender-mcp</strong></td><td>~30 أداة</td>
+      <td>الأكثر شهرة، يدعم PolyHaven/Hyper3D، أعلنته Adobe رسميا</td>
+    </tr>
+    <tr>
+      <td><strong>Gaius114/blender-claude-mcp</strong></td><td>كامل</td>
+      <td>HTTP bridge، zero dependencies، يدعم Blender 4.x و 5.x، Geometry Nodes, Rendering, EEVEE</td>
+    </tr>
+    <tr>
+      <td><strong>MickeyBadBad/atelier-mcp</strong></td><td><strong>80 أداة</strong></td>
+      <td>Sketchfab, AmbientCG, Tripo3D, Meshy, Hunyuan3D</td>
+    </tr>
+    <tr>
+      <td><strong>Blender Foundation (رسمي)</strong></td><td>أساسي</td>
+      <td>MCP Server رسمي من Blender Lab + Llama.cpp</td>
+    </tr>
+  </table>
+
+  <h4>أسهل طريقة للتركيب (ahujasid/blender-mcp)</h4>
+  <pre style="direction: ltr; text-align: left;">claude mcp add blender uvx blender-mcp
+
+# ثم افتح Blender ← Install addon.py ← اضغط "Connect to Claude"</pre>
+  <p>المصدر: <a href="https://github.com/ahujasid/blender-mcp">github.com/ahujasid/blender-mcp</a></p>
+
+  <h3>كيف تعمل كل مخدمات MCP مع إعدادك الحالي</h3>
+  <ol>
+    <li><strong>تثبت</strong> مخدم MCP على جهازك المحلي</li>
+    <li><strong>تسجله</strong> مع Claude Code عبر <code>claude mcp add</code></li>
+    <li>Claude Code يتصل بمخدم MCP عبر stdio أو WebSocket</li>
+    <li><strong>كل طلبات AI</strong> تبقى تذهب إلى سيرفر SGLang المحلي — مخدمات MCP لا تغير الموديل أو الـ endpoint</li>
+    <li><strong>كل شيء يبقى 100% أوفلاين</strong></li>
+  </ol>
+
+  <div class="success-box">
+    <strong>الترتيب المقترح للتركيب:</strong>
+    <ol>
+      <li><strong>adobe-mcp</strong> — كل برامج أدوبي في مخدم واحد</li>
+      <li><strong>ahujasid/blender-mcp</strong> أو <strong>Gaius114/blender-claude-mcp</strong> — التحكم بـ Blender</li>
+      <li><strong>00bx/00bx-photoshop-mcp</strong> — إذا احتجت كل أدوات Photoshop الـ 323</li>
+    </ol>
+    <p>كلها تشتغل مع DeepSeek V4 Flash و SGLang أوفلاين 100%. الموديل يبقى كما هو — مخدمات MCP مجرد أدوات إضافية.</p>
+  </div>
+</section>
+
 <!-- SUMMARY -->
 <section class="section">
   <h2>ملخص التشغيل الأوفلاين</h2>
